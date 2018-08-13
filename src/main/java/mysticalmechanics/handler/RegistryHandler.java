@@ -35,9 +35,9 @@ public class RegistryHandler {
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event)
     {
-        IRON_AXLE = (BlockAxle) new BlockAxle(Material.IRON).setRegistryName(MysticalMechanics.MODID,"axle_iron").setUnlocalizedName("axle_iron").setCreativeTab(CreativeTabs.REDSTONE);
-        GEARBOX_FRAME = (BlockGearbox) new BlockGearbox(Material.IRON).setRegistryName(MysticalMechanics.MODID,"gearbox_frame").setUnlocalizedName("gearbox_frame").setCreativeTab(CreativeTabs.REDSTONE);
-        CREATIVE_MECH_SOURCE = (BlockCreativeMechSource) new BlockCreativeMechSource().setRegistryName(MysticalMechanics.MODID, "creative_mech_source").setUnlocalizedName("creative_mech_source").setCreativeTab(CreativeTabs.REDSTONE);
+        IRON_AXLE = (BlockAxle) new BlockAxle(Material.IRON).setRegistryName(MysticalMechanics.MODID,"axle_iron").setUnlocalizedName("axle_iron").setCreativeTab(CreativeTabs.REDSTONE).setHardness(5.0F).setResistance(10.0F);
+        GEARBOX_FRAME = (BlockGearbox) new BlockGearbox(Material.IRON).setRegistryName(MysticalMechanics.MODID,"gearbox_frame").setUnlocalizedName("gearbox_frame").setCreativeTab(CreativeTabs.REDSTONE).setHardness(5.0F).setResistance(10.0F);
+        CREATIVE_MECH_SOURCE = (BlockCreativeMechSource) new BlockCreativeMechSource().setRegistryName(MysticalMechanics.MODID, "creative_mech_source").setUnlocalizedName("creative_mech_source").setCreativeTab(CreativeTabs.REDSTONE).setHardness(5.0F).setResistance(10.0F);
 
         event.getRegistry().register(IRON_AXLE);
         event.getRegistry().register(GEARBOX_FRAME);

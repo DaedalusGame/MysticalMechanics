@@ -71,9 +71,9 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
             }
             if (from == TileEntityGearbox.this.from || from == null) {
                 super.setPower(value, from);
-            }
-            if (value != getPower(null)) {
-                onPowerChange();
+                if (value != getPower(null)) {
+                    onPowerChange();
+                }
             }
         }
     };
