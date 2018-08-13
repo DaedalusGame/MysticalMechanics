@@ -1,0 +1,9 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "model": "mysticalmechanics:creative_mech_source"
+    },
+    "variants":{
+        "normal": [{}]
+    }
+}

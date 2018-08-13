@@ -1,0 +1,16 @@
+[
+{
+  "modid": "mysticalmechanics",
+  "name": "Mystical Mechanics",
+  "description": "Simple mechanical energy, formerly a part of Embers",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["BordListian","elucent"],
+  "credits": "Forge, elucent",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
