@@ -19,7 +19,8 @@ import javax.annotation.Nullable;
 
 public class TileEntityCreativeMechSource extends TileEntity implements ITickable {
     int ticksExisted = 0;
-    BlockPos receivedFrom = null;
+    private double[] wantedPower = new double[]{10,20,40,80,160,320};
+    private int wantedPowerIndex = 0;
     public DefaultMechCapability capability = new DefaultMechCapability(){
         @Override
         public void setPower(double value, EnumFacing from) {
@@ -35,6 +36,7 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
         }
     };
 
+
     public TileEntityCreativeMechSource(){
         super();
     }
@@ -43,6 +45,7 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
     public NBTTagCompound writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
         tag.setDouble("mech_power", capability.power);
+        tag.setInteger("level",wantedPowerIndex);
         return tag;
     }
 
@@ -52,6 +55,7 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
         if (tag.hasKey("mech_power")){
             capability.power = tag.getDouble("mech_power");
         }
+        wantedPowerIndex = tag.getInteger("level") % wantedPower.length;
     }
 
     @Override
@@ -88,7 +92,8 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
 
     public boolean activate(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
                             EnumFacing side, float hitX, float hitY, float hitZ) {
-        return false;
+        wantedPowerIndex = (wantedPowerIndex+1) % wantedPower.length;
+        return true;
     }
 
     public void breakBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
@@ -111,7 +116,7 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
     @Override
     public void update() {
         ticksExisted++;
-        double wantedPower = 160;
+        double wantedPower = this.wantedPower[wantedPowerIndex];
         if (capability.getPower(null) != wantedPower){
             capability.setPower(wantedPower,null);
             markDirty();

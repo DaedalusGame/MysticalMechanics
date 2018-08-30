@@ -1,0 +1,72 @@
+{
+  "block.gear.add": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gear_insert1",
+      "mysticalmechanics:gearbox/gear_insert2"
+    ],
+    "subtitle": "subtitles.gear.add"
+  },
+  "block.gear.remove": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gear_remove1",
+      "mysticalmechanics:gearbox/gear_remove2"
+    ],
+    "subtitle": "subtitles.gear.remove"
+  },
+  "block.gearbox.fast.lv1": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_fast_loop_lv1"
+    ]
+  },
+  "block.gearbox.fast.lv2": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_fast_loop_lv2"
+    ]
+  },
+  "block.gearbox.fast.lv3": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_fast_loop_lv3"
+    ]
+  },
+  "block.gearbox.mid.lv1": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_mid_loop_lv1"
+    ]
+  },
+  "block.gearbox.mid.lv2": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_mid_loop_lv2"
+    ]
+  },
+  "block.gearbox.mid.lv3": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_mid_loop_lv3"
+    ]
+  },
+  "block.gearbox.slow.lv1": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_slow_loop_lv1"
+    ]
+  },
+  "block.gearbox.slow.lv2": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_slow_loop_lv2"
+    ]
+  },
+  "block.gearbox.slow.lv3": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_slow_loop_lv3"
+    ]
+  }
+}

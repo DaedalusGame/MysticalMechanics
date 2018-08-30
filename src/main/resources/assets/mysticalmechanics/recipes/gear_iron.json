@@ -5,9 +5,9 @@
     "count": 1
   },
   "pattern": [
-    "CCC",
+    " C ",
     "CSC",
-    "CCC"
+    " C "
   ],
   "type": "forge:ore_shaped",
   "key": {
