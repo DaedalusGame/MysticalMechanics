@@ -96,6 +96,9 @@ public class RegistryHandler {
         event.getRegistry().register(registerSound("mysticalmechanics:block.gearbox.slow.lv1"));
         event.getRegistry().register(registerSound("mysticalmechanics:block.gearbox.slow.lv2"));
         event.getRegistry().register(registerSound("mysticalmechanics:block.gearbox.slow.lv3"));
+        event.getRegistry().register(registerSound("mysticalmechanics:block.gearbox.very_slow.lv1"));
+        event.getRegistry().register(registerSound("mysticalmechanics:block.gearbox.very_slow.lv2"));
+        event.getRegistry().register(registerSound("mysticalmechanics:block.gearbox.very_slow.lv3"));
     }
 
     @SideOnly(Side.CLIENT)
