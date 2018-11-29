@@ -8,6 +8,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
 public class Misc {
+    static double epsilion = 0.00001;
+
+    public static boolean isRoughlyEqual(double a, double b) {
+        return a == b || Math.abs(a - b) < epsilion;
+    }
+
     public static void syncTE(TileEntity tile) {
         World world = tile.getWorld();
         if(world instanceof WorldServer) {

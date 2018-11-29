@@ -4,6 +4,7 @@ import mysticalmechanics.api.DefaultMechCapability;
 import mysticalmechanics.api.IGearBehavior;
 import mysticalmechanics.api.MysticalMechanicsAPI;
 import mysticalmechanics.block.BlockGearbox;
+import mysticalmechanics.util.Misc;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -67,7 +68,7 @@ public class TileEntityMergebox extends TileEntityGearbox {
                 if (facing == TileEntityMergebox.this.from)
                     continue;
                 double power = getPower(facing);
-                if (equalPower == power)
+                if (Misc.isRoughlyEqual(equalPower,power))
                     maxPower += power;
             }
             onPowerChange();
