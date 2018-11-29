@@ -26,4 +26,12 @@ public interface IMechCapability {
      * Expected behavior is that this method is used to propagate power change through the network.
      */
     void onPowerChange();
+
+    default boolean isInput(EnumFacing from) {
+        return true;
+    }
+
+    default boolean isOutput(EnumFacing from) {
+        return true;
+    }
 }

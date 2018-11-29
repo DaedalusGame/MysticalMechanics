@@ -103,6 +103,16 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                     }
                 }
             }
+
+            @Override
+            public boolean isInput(EnumFacing from) {
+                return TileEntityGearbox.this.from == from;
+            }
+
+            @Override
+            public boolean isOutput(EnumFacing from) {
+                return TileEntityGearbox.this.from != from;
+            }
         };
     }
 

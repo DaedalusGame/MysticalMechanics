@@ -117,5 +117,15 @@ public class TileEntityMergebox extends TileEntityGearbox {
                 }
             }
         }
+
+        @Override
+        public boolean isInput(EnumFacing from) {
+            return TileEntityMergebox.this.from != from;
+        }
+
+        @Override
+        public boolean isOutput(EnumFacing from) {
+            return TileEntityMergebox.this.from == from;
+        }
     }
 }
