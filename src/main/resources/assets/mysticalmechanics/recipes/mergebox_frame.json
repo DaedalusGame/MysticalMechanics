@@ -1,0 +1,27 @@
+{
+  "result": {
+    "item": "mysticalmechanics:mergebox_frame",
+    "data": 0,
+    "count": 1
+  },
+  "pattern": [
+    "CCC",
+    "IGI",
+    "CIC"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "G": {
+      "type": "forge:ore_dict",
+      "ore": "gearGold"
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "ingotGold"
+    },
+    "I": {
+      "item": "mysticalmechanics:axle_iron",
+      "data": 0
+    }
+  }
+}

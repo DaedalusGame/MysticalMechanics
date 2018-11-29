@@ -32,6 +32,7 @@ import java.util.List;
 
 public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox, ISoundController {
     EnumFacing from = null;
+    public boolean powered = false;
     public int connections = 0;
     public ItemStack[] gears = new ItemStack[]{
             ItemStack.EMPTY,
@@ -388,6 +389,9 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                 IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gear);
                 behavior.visualUpdate(this,facing,gear);
             }
+            boolean newPowered = world.isBlockPowered(pos);
+            if(newPowered != powered)
+                updateNeighbors();
         }
     }
 }

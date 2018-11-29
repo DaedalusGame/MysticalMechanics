@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "mysticalmechanics:gear_gold_off",
+    "data": 0,
+    "count": 1
+  },
+  "pattern": [
+    "CCC",
+    "CSC",
+    "CCC"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "item": "mysticalmechanics:gear_gold",
+      "data": 0
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "mysticalmechanics:gear_gold",
+    "data": 0,
+    "count": 1
+  },
+  "pattern": [
+    " C ",
+    "CSC",
+    " C "
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "type": "forge:ore_dict",
+      "ore": "nuggetGold"
+    },
+    "C": {
+      "type": "forge:ore_dict",
+      "ore": "ingotGold"
+    }
+  }
+}

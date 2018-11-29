@@ -38,6 +38,12 @@ public class RegistryHandler {
 
     @GameRegistry.ObjectHolder("mysticalmechanics:gear_iron")
     public static Item IRON_GEAR;
+    @GameRegistry.ObjectHolder("mysticalmechanics:gear_gold")
+    public static Item GOLD_GEAR;
+    @GameRegistry.ObjectHolder("mysticalmechanics:gear_gold_on")
+    public static Item GOLD_GEAR_ON;
+    @GameRegistry.ObjectHolder("mysticalmechanics:gear_gold_off")
+    public static Item GOLD_GEAR_OFF;
 
     @GameRegistry.ObjectHolder("mysticalmechanics:block.gear.add")
     public static SoundEvent GEAR_ADD;
@@ -90,8 +96,12 @@ public class RegistryHandler {
         event.getRegistry().register(new ItemBlock(CREATIVE_MECH_SOURCE).setRegistryName(CREATIVE_MECH_SOURCE.getRegistryName()));
 
         event.getRegistry().register(IRON_GEAR = new Item().setRegistryName(MysticalMechanics.MODID, "gear_iron").setUnlocalizedName("gear_iron").setCreativeTab(CreativeTabs.REDSTONE));
+        event.getRegistry().register(GOLD_GEAR = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold").setUnlocalizedName("gear_gold").setCreativeTab(CreativeTabs.REDSTONE));
+        event.getRegistry().register(GOLD_GEAR_ON = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold_on").setUnlocalizedName("gear_gold_on").setCreativeTab(CreativeTabs.REDSTONE));
+        event.getRegistry().register(GOLD_GEAR_OFF = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold_off").setUnlocalizedName("gear_gold_off").setCreativeTab(CreativeTabs.REDSTONE));
 
         OreDictionary.registerOre("gearIron", IRON_GEAR);
+        OreDictionary.registerOre("gearGold", GOLD_GEAR);
     }
 
     @SubscribeEvent
@@ -118,9 +128,13 @@ public class RegistryHandler {
     public void registerModels(ModelRegistryEvent event) {
         registerItemModel(Item.getItemFromBlock(IRON_AXLE), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(GEARBOX_FRAME), 0, "inventory");
+        registerItemModel(Item.getItemFromBlock(MERGEBOX_FRAME), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(CREATIVE_MECH_SOURCE), 0, "inventory");
 
         registerItemModel(IRON_GEAR, 0, "inventory");
+        registerItemModel(GOLD_GEAR, 0, "inventory");
+        registerItemModel(GOLD_GEAR_OFF, 0, "inventory");
+        registerItemModel(GOLD_GEAR_ON, 0, "inventory");
     }
 
     @SideOnly(Side.CLIENT)

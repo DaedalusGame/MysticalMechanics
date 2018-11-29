@@ -11,6 +11,7 @@ import mysticalmechanics.tileentity.TileEntityCreativeMechSource;
 import mysticalmechanics.tileentity.TileEntityGearbox;
 import mysticalmechanics.tileentity.TileEntityMergebox;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -76,6 +77,41 @@ public class MysticalMechanics
             @Override
             public double transformPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
                 return power;
+            }
+
+            @Override
+            public void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear) {
+                //NOOP
+            }
+        });
+        MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_gold"), new OreIngredient("gearGold"), new IGearBehavior() {
+            @Override
+            public double transformPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
+                return power;
+            }
+
+            @Override
+            public void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear) {
+                //NOOP
+            }
+        });
+        MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_gold_on"), Ingredient.fromItem(RegistryHandler.GOLD_GEAR_ON), new IGearBehavior() {
+            @Override
+            public double transformPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
+                boolean powered = tile.getWorld().isBlockPowered(tile.getPos());
+                return !powered ? power : 0;
+            }
+
+            @Override
+            public void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear) {
+                //NOOP
+            }
+        });
+        MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_gold_off"), Ingredient.fromItem(RegistryHandler.GOLD_GEAR_OFF), new IGearBehavior() {
+            @Override
+            public double transformPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
+                boolean powered = tile.getWorld().isBlockPowered(tile.getPos());
+                return powered ? power : 0;
             }
 
             @Override
