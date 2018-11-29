@@ -4,6 +4,7 @@ import mysticalmechanics.api.DefaultMechCapability;
 import mysticalmechanics.api.IAxle;
 import mysticalmechanics.api.MysticalMechanicsAPI;
 import mysticalmechanics.block.BlockAxle;
+import mysticalmechanics.util.Misc;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -179,13 +180,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
     @Override
     public void markDirty() {
         super.markDirty();
-        syncTE();
-    }
-
-    public void syncTE()
-    {
-        IBlockState state = this.world.getBlockState(this.pos);
-        this.world.notifyBlockUpdate(pos, state, state, 3);
+        Misc.syncTE(this);
     }
 
     @Override

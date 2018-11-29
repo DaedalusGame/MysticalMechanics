@@ -68,5 +68,23 @@
     "sounds": [
       "mysticalmechanics:gearbox/gearbox_slow_loop_lv3"
     ]
+  },
+  "block.gearbox.very_slow.lv1": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_very_slow_loop_lv1"
+    ]
+  },
+  "block.gearbox.very_slow.lv2": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_very_slow_loop_lv2"
+    ]
+  },
+  "block.gearbox.very_slow.lv3": {
+    "category": "block",
+    "sounds": [
+      "mysticalmechanics:gearbox/gearbox_very_slow_loop_lv3"
+    ]
   }
 }

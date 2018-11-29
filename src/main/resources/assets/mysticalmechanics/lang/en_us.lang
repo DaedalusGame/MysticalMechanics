@@ -1,5 +1,6 @@
 tile.axle_iron.name=Iron Axle
 tile.gearbox_frame.name=Gearbox Frame
+tile.mergebox_frame.name=Mergebox Frame
 tile.creative_mech_source.name=Creative Mechanical Source
 
 item.gear_iron.name=Iron Gear

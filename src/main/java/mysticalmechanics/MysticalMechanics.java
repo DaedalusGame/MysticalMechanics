@@ -9,6 +9,7 @@ import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.tileentity.TileEntityAxle;
 import mysticalmechanics.tileentity.TileEntityCreativeMechSource;
 import mysticalmechanics.tileentity.TileEntityGearbox;
+import mysticalmechanics.tileentity.TileEntityMergebox;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.tileentity.TileEntity;
@@ -68,6 +69,7 @@ public class MysticalMechanics
     {
         GameRegistry.registerTileEntity(TileEntityAxle.class,"mysticalmechanics:axle");
         GameRegistry.registerTileEntity(TileEntityGearbox.class,"mysticalmechanics:gearbox");
+        GameRegistry.registerTileEntity(TileEntityMergebox.class,"mysticalmechanics:mergebox");
         GameRegistry.registerTileEntity(TileEntityCreativeMechSource.class,"mysticalmechanics:creative_mech_source");
 
         MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_iron"), new OreIngredient("gearIron"), new IGearBehavior() {

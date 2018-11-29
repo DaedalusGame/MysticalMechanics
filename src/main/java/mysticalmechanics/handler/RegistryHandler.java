@@ -4,6 +4,7 @@ import mysticalmechanics.MysticalMechanics;
 import mysticalmechanics.block.BlockAxle;
 import mysticalmechanics.block.BlockCreativeMechSource;
 import mysticalmechanics.block.BlockGearbox;
+import mysticalmechanics.block.BlockMergebox;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -30,6 +31,8 @@ public class RegistryHandler {
     public static BlockAxle IRON_AXLE;
     @GameRegistry.ObjectHolder("mysticalmechanics:gearbox_frame")
     public static BlockGearbox GEARBOX_FRAME;
+    @GameRegistry.ObjectHolder("mysticalmechanics:mergebox_frame")
+    public static BlockGearbox MERGEBOX_FRAME;
     @GameRegistry.ObjectHolder("mysticalmechanics:creative_mech_source")
     public static BlockCreativeMechSource CREATIVE_MECH_SOURCE;
 
@@ -59,15 +62,23 @@ public class RegistryHandler {
     public static SoundEvent GEARBOX_SLOW_LV2;
     @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.slow.lv3")
     public static SoundEvent GEARBOX_SLOW_LV3;
+    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.very_slow.lv1")
+    public static SoundEvent GEARBOX_VERYSLOW_LV1;
+    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.very_slow.lv2")
+    public static SoundEvent GEARBOX_VERYSLOW_LV2;
+    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.very_slow.lv3")
+    public static SoundEvent GEARBOX_VERYSLOW_LV3;
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         IRON_AXLE = (BlockAxle) new BlockAxle(Material.IRON).setRegistryName(MysticalMechanics.MODID, "axle_iron").setUnlocalizedName("axle_iron").setCreativeTab(CreativeTabs.REDSTONE).setHardness(5.0F).setResistance(10.0F);
         GEARBOX_FRAME = (BlockGearbox) new BlockGearbox(Material.IRON).setRegistryName(MysticalMechanics.MODID, "gearbox_frame").setUnlocalizedName("gearbox_frame").setCreativeTab(CreativeTabs.REDSTONE).setHardness(5.0F).setResistance(10.0F);
+        MERGEBOX_FRAME = (BlockMergebox) new BlockMergebox(Material.IRON).setRegistryName(MysticalMechanics.MODID, "mergebox_frame").setUnlocalizedName("mergebox_frame").setCreativeTab(CreativeTabs.REDSTONE).setHardness(5.0F).setResistance(10.0F);
         CREATIVE_MECH_SOURCE = (BlockCreativeMechSource) new BlockCreativeMechSource().setRegistryName(MysticalMechanics.MODID, "creative_mech_source").setUnlocalizedName("creative_mech_source").setCreativeTab(CreativeTabs.REDSTONE).setHardness(5.0F).setResistance(10.0F);
 
         event.getRegistry().register(IRON_AXLE);
         event.getRegistry().register(GEARBOX_FRAME);
+        event.getRegistry().register(MERGEBOX_FRAME);
         event.getRegistry().register(CREATIVE_MECH_SOURCE);
     }
 
@@ -75,6 +86,7 @@ public class RegistryHandler {
     public void registerItems(RegistryEvent.Register<Item> event) {
         event.getRegistry().register(new ItemBlock(IRON_AXLE).setRegistryName(IRON_AXLE.getRegistryName()));
         event.getRegistry().register(new ItemBlock(GEARBOX_FRAME).setRegistryName(GEARBOX_FRAME.getRegistryName()));
+        event.getRegistry().register(new ItemBlock(MERGEBOX_FRAME).setRegistryName(MERGEBOX_FRAME.getRegistryName()));
         event.getRegistry().register(new ItemBlock(CREATIVE_MECH_SOURCE).setRegistryName(CREATIVE_MECH_SOURCE.getRegistryName()));
 
         event.getRegistry().register(IRON_GEAR = new Item().setRegistryName(MysticalMechanics.MODID, "gear_iron").setUnlocalizedName("gear_iron").setCreativeTab(CreativeTabs.REDSTONE));
