@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 
 public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEntityGearbox> {
@@ -18,48 +19,59 @@ public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEnt
         if (tile != null){
             IBlockState state = tile.getWorld().getBlockState(tile.getPos());
             if (state.getBlock() instanceof BlockGearbox){
-                double normPower = tile.capability.getPower(null);
-                for (int i = 0; i < 6; i ++){
-                    if (!tile.gears[i].isEmpty()){
-                        EnumFacing face = EnumFacing.getFront(i);
+				int face = 0;
+				for (ItemStack gear:tile.gears) {					
+					if (!gear.isEmpty()) {
+						//Culling is good unless there's a specific reason to disable it.
+						//GlStateManager.disableCull();
+						//there's no transparency in this model and glblend isn't enabled.
+						//GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);								
 
-                        GlStateManager.disableCull();
-                        GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+						EnumFacing direction = EnumFacing.VALUES[face];
+						double powerRatio = tile.capability.getPower(direction);						
 
-                        double powerratio = tile.capability.getPower(face) / normPower;
+						GlStateManager.pushMatrix();
+						GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
+						
+						//rotate gear model items to fit the sides of the gearbox.
+						switch (direction) {
+						case DOWN:
+							GlStateManager.rotate(-90, 1, 0, 0);
+							break;
+						case UP:
+							GlStateManager.rotate(90, 1, 0, 0);
+							break;
+						case NORTH:
+							break;
+						case WEST:
+							GlStateManager.rotate(90, 0, 1, 0);
+							break;
+						case SOUTH:
+							GlStateManager.rotate(180, 0, 1, 0);
+							break;
+						case EAST:
+							GlStateManager.rotate(270, 0, 1, 0);
+							break;
+						default:
+							break;
 
-                        GlStateManager.pushMatrix();
-                        GlStateManager.translate(x+0.5, y+0.5, z+0.5);
-                        if (face == EnumFacing.DOWN){
-                            GlStateManager.rotate(-90, 1, 0, 0);
-                        }
-
-                        if (face == EnumFacing.UP){
-                            GlStateManager.rotate(90, 1, 0, 0);
-                        }
-
-                        if (face == EnumFacing.NORTH){
-
-                        }
-
-                        if (face == EnumFacing.WEST){
-                            GlStateManager.rotate(90, 0, 1, 0);
-                        }
-
-                        if (face == EnumFacing.SOUTH){
-                            GlStateManager.rotate(180, 0, 1, 0);
-                        }
-
-                        if (face == EnumFacing.EAST){
-                            GlStateManager.rotate(270, 0, 1, 0);
-                        }
-                        GlStateManager.translate(0, 0, -0.375);
-                        GlStateManager.scale(0.875, 0.875, 0.875);
-                        GlStateManager.rotate(((float)(partialTicks * tile.angle)+(1 - partialTicks)*(float)tile.lastAngle)*(float)powerratio, 0, 0, 1);
-                        Minecraft.getMinecraft().getRenderItem().renderItem(tile.gears[i], ItemCameraTransforms.TransformType.FIXED);
-                        GlStateManager.popMatrix();
-                    }
-                }
+						}
+						
+						//render the gears and rotate them based on how much power they have.
+						GlStateManager.translate(0, 0, -0.375);
+						GlStateManager.scale(0.875, 0.875, 0.875);
+						GlStateManager.rotate(
+								((float) (partialTicks * tile.angle) + (1 - partialTicks) * (float) tile.lastAngle)
+										* (float) powerRatio,
+								0, 0, 1);
+						Minecraft.getMinecraft().getRenderItem().renderItem(gear,
+								ItemCameraTransforms.TransformType.FIXED);
+						GlStateManager.popMatrix();
+						
+					}
+					//this keeps track of the current side being rendered.
+					face++;					
+				} 
             }
 
         }
