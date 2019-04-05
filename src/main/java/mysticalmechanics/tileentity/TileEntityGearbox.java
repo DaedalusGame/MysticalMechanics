@@ -8,6 +8,7 @@ import mysticalmechanics.api.MysticalMechanicsAPI;
 import mysticalmechanics.block.BlockGearbox;
 import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.util.ISoundController;
+import mysticalmechanics.util.Misc;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -364,9 +365,8 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
 
     @Override
     public void markDirty() {
-        super.markDirty();
-        //sends client packet and updates the render chunk.
-        world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
+        super.markDirty();       
+        Misc.syncTE(this);
     }
 
     public void breakBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player) {

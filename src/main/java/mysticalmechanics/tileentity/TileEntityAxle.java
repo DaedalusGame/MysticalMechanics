@@ -4,6 +4,7 @@ import mysticalmechanics.api.DefaultMechCapability;
 import mysticalmechanics.api.IAxle;
 import mysticalmechanics.api.MysticalMechanicsAPI;
 import mysticalmechanics.block.BlockAxle;
+import mysticalmechanics.util.Misc;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -178,9 +179,8 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
 
     @Override
     public void markDirty() {
-        super.markDirty();
-        //sends client packet and updates render chunk.
-        world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);       
+        super.markDirty();        
+        Misc.syncTE(this);      
     }
 
     @Override
@@ -200,7 +200,9 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing){
         if (capability == MysticalMechanicsAPI.MECH_CAPABILITY){
-            return (T)this.capability;
+        	@SuppressWarnings("unchecked")
+			T result = (T) this.capability;
+            return result;
         }
         return super.getCapability(capability, facing);
     }
