@@ -24,9 +24,10 @@ public class Misc {
 				int i = tile.getPos().getX() >> 4;
 				int j = tile.getPos().getZ() >> 4;
 				PlayerChunkMapEntry entry = chunkMap.getEntry(i, j);
-				if (entry != null)
+				if (entry != null) {
 					entry.sendPacket(new SPacketBlockChange(chunkMap.getWorldServer(),tile.getPos()));					 
 					entry.sendPacket(packet);
+				}
 			}
 
 		}
