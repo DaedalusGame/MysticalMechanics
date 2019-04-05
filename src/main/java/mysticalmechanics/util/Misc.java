@@ -14,6 +14,7 @@ public class Misc {
         return a == b || Math.abs(a - b) < epsilion;
     }
 
+   /* remove in the next code cleanup 
     public static void syncTE(TileEntity tile) {
         World world = tile.getWorld();
         if(world instanceof WorldServer) {
@@ -27,5 +28,5 @@ public class Misc {
                     entry.sendPacket(packet);
             }
         }
-    }
+    }*/
 }

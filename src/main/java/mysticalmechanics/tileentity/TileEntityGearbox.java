@@ -8,7 +8,6 @@ import mysticalmechanics.api.MysticalMechanicsAPI;
 import mysticalmechanics.block.BlockGearbox;
 import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.util.ISoundController;
-import mysticalmechanics.util.Misc;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -203,7 +202,9 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
         if (capability == MysticalMechanicsAPI.MECH_CAPABILITY) {
-            return (T) this.capability;
+        	@SuppressWarnings("unchecked") 
+			T result = (T) this.capability;
+            return result;
         }
         return super.getCapability(capability, facing);
     }
@@ -364,7 +365,8 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     @Override
     public void markDirty() {
         super.markDirty();
-        Misc.syncTE(this);
+        //sends client packet and updates the render chunk.
+        world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 3);
     }
 
     public void breakBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
