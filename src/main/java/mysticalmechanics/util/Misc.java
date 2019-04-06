@@ -28,8 +28,7 @@ public class Misc {
 					if(broken){
 						//tells the client the block has changed if it has been broken
 						entry.sendPacket(new SPacketBlockChange(chunkMap.getWorldServer(),tile.getPos()));	
-					}
-					System.out.println(world.getBlockState(tile.getPos()).getBlock());				 
+					}								 
 					entry.sendPacket(packet);
 				}
 			}
