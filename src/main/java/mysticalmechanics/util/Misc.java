@@ -15,17 +15,21 @@ public class Misc {
 		return a == b || Math.abs(a - b) < epsilion;
 	}
 
-	public static void syncTE(TileEntity tile) {
-		World world = tile.getWorld();
+	public static void syncTE(TileEntity tile, boolean broken) {
+		World world = tile.getWorld();		
 		if (world instanceof WorldServer) {
 			PlayerChunkMap chunkMap = ((WorldServer) world).getPlayerChunkMap();
 			SPacketUpdateTileEntity packet = tile.getUpdatePacket();
 			if (packet != null) {
 				int i = tile.getPos().getX() >> 4;
 				int j = tile.getPos().getZ() >> 4;
-				PlayerChunkMapEntry entry = chunkMap.getEntry(i, j);
+				PlayerChunkMapEntry entry = chunkMap.getEntry(i, j);				
 				if (entry != null) {
-					entry.sendPacket(new SPacketBlockChange(chunkMap.getWorldServer(),tile.getPos()));					 
+					if(broken){
+						//tells the client the block has changed if it has been broken
+						entry.sendPacket(new SPacketBlockChange(chunkMap.getWorldServer(),tile.getPos()));	
+					}
+					System.out.println(world.getBlockState(tile.getPos()).getBlock());				 
 					entry.sendPacket(packet);
 				}
 			}

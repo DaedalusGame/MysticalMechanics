@@ -26,6 +26,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
     BlockPos left;
     BlockPos right;
     public double angle, lastAngle;
+    private boolean isBroken;
     public DefaultMechCapability capability = new DefaultMechCapability(){
         @Override
         public void onPowerChange(){
@@ -180,7 +181,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
     @Override
     public void markDirty() {
         super.markDirty();        
-        Misc.syncTE(this);      
+        Misc.syncTE(this, isBroken);      
     }
 
     @Override
@@ -213,6 +214,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
     }
 
     public void breakBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
+    	isBroken = true;
         capability.setPower(0f,null);
     }
 

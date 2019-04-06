@@ -33,6 +33,7 @@ import java.util.List;
 public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox, ISoundController {
     EnumFacing from = null;
     public boolean powered = false;
+    private boolean isBroken;
     public int connections = 0;
     public ItemStack[] gears = new ItemStack[]{
             ItemStack.EMPTY,
@@ -366,7 +367,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     @Override
     public void markDirty() {
         super.markDirty();       
-        Misc.syncTE(this);
+        Misc.syncTE(this, isBroken);
     }
 
     public void breakBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
@@ -376,6 +377,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
             }
             gears[i] = ItemStack.EMPTY;
         }
+        isBroken = true;
         capability.setPower(0f, null);
         updateNeighbors();
     }
