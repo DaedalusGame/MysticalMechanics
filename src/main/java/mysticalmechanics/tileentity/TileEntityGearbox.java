@@ -125,7 +125,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
             TileEntity t = world.getTileEntity(getPos().offset(from));
             if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()) && !getGear(from).isEmpty()) {
                 capability.setPower(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()).getPower(from.getOpposite()), null);
-            } else
+            } else            	
                 capability.setPower(0, null);
         }
         connections = 0;
@@ -134,16 +134,42 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
             if (f != null && f != from) {
                 TileEntity t = world.getTileEntity(getPos().offset(f));
                 if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite())) {
-                    if (!getGear(f).isEmpty())
-                        connections++;
+                    if (!getGear(f).isEmpty()) {
+                    	connections++;
+                    }
                     toUpdate.add(f);
+                    
+                    
                 }
-            }
+            }                  
         }
         for (EnumFacing f : toUpdate) {
             BlockPos p = getPos().offset(f);
-            TileEntity t = world.getTileEntity(p);
-            t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(capability.getPower(f), f.getOpposite());
+            TileEntity t = world.getTileEntity(p);            
+            if(t != null && t instanceof TileEntityAxle && f != from) {            	            	
+            	//this gets real confusing after a while
+            	TileEntity oppositeOf = world.getTileEntity(((TileEntityAxle)t).getConnection(f.getAxisDirection()).offset(f));
+            	if(oppositeOf != null && oppositeOf instanceof IGearbox) {
+            		if((oppositeOf.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).isOutput(f.getOpposite())) && this.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f).isOutput(f)) {
+            			//if you made it here you derped and tried to add 2 outputs on 1 axle
+            		}else if(!getGear(f).isEmpty()){
+            				//deals with connections between gearboxes.
+            				t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(capability.getPower(f), f.getOpposite());
+            			}else {            				
+            				t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(0, f);
+            			}
+            	}else if(!getGear(f).isEmpty()) {
+            		//deals with axles that arent connected to gearboxes.
+            		t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(capability.getPower(f), f.getOpposite());
+            	}else {
+            		t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(0, f);
+            	}
+            }else if(!getGear(f).isEmpty()){
+            	//deals with anything else that has mech capability.
+            	t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(capability.getPower(f), f.getOpposite());
+            }else {            	
+            	t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(0, f);
+            }
         }
         markDirty();
     }
