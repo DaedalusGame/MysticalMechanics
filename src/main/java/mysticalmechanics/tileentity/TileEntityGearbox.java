@@ -33,6 +33,7 @@ import java.util.List;
 public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox, ISoundController {
     EnumFacing from = null;
     public boolean powered = false;
+    private boolean isBroken;
     public int connections = 0;
     public ItemStack[] gears = new ItemStack[]{
             ItemStack.EMPTY,
@@ -203,7 +204,9 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
         if (capability == MysticalMechanicsAPI.MECH_CAPABILITY) {
-            return (T) this.capability;
+        	@SuppressWarnings("unchecked") 
+			T result = (T) this.capability;
+            return result;
         }
         return super.getCapability(capability, facing);
     }
@@ -363,8 +366,8 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
 
     @Override
     public void markDirty() {
-        super.markDirty();
-        Misc.syncTE(this);
+        super.markDirty();       
+        Misc.syncTE(this, isBroken);
     }
 
     public void breakBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
@@ -374,6 +377,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
             }
             gears[i] = ItemStack.EMPTY;
         }
+        isBroken = true;
         capability.setPower(0f, null);
         updateNeighbors();
     }

@@ -30,14 +30,20 @@ public class TileEntityMergebox extends TileEntityGearbox {
             if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()) && !getGear(f).isEmpty())
                 capability.setPower(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).getPower(f.getOpposite()), f);
             else
-                capability.setPower(0, f);
+                capability.setPower(0, f);        
+           
         }
         if (state.getBlock() instanceof BlockGearbox) {
-            from = state.getValue(BlockGearbox.facing);
+            from = state.getValue(BlockGearbox.facing);            
             TileEntity t = world.getTileEntity(getPos().offset(from));
-            if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()) && !getGear(from).isEmpty())
-                t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()).setPower(capability.getPower(from), from.getOpposite());
+            if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()) && !getGear(from).isEmpty()) {
+            	t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()).setPower(capability.getPower(from), from.getOpposite());
+            }else if(t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite())){
+            	t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()).setPower(0, from);
+            }
+                
         }
+        
         markDirty();
     }
 

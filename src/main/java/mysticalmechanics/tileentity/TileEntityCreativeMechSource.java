@@ -85,7 +85,9 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing){
         if (capability == MysticalMechanicsAPI.MECH_CAPABILITY){
-            return (T)this.capability;
+        	@SuppressWarnings("unchecked")
+			T result = (T) this.capability;
+            return result;
         }
         return super.getCapability(capability, facing);
     }
@@ -107,7 +109,7 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
             if (t != null){
                 if (t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite())){
                     t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(capability.getPower(f.getOpposite()),f.getOpposite());
-                    t.markDirty();
+                   // t.markDirty(); this is redundant due to being called once the power changes.
                 }
             }
         }
