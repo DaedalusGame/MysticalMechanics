@@ -387,7 +387,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         if (world.isRemote) {
             handleSound();
             lastAngle = angle;
-            angle += capability.getPower(null);
+            angle += 1;//capability.getPower(null);
             for(EnumFacing facing : EnumFacing.VALUES) {
                 ItemStack gear = getGear(facing);
                 IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gear);
