@@ -90,32 +90,30 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
 		TileEntity backTile = world.getTileEntity(back);
 		
 		//input updates
-				if (frontTile != null && frontTile.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing)){			
-					if(frontTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing).isOutput(frontFacing)&&capability.isInput(backFacing)){				
-						capability.setPower(frontTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing).getPower(backFacing), frontFacing);
-					}
-				}			
+		if (frontTile != null && frontTile.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing)){			
+			if(frontTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing).isOutput(frontFacing)&&capability.isInput(backFacing)){				
+				capability.setPower(frontTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing).getPower(backFacing), frontFacing);
+			}
+		}			
 					
-				if (backTile != null && backTile.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing)){			
-					if(backTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing).isOutput(backFacing)&&capability.isInput(frontFacing)) {				
-						capability.setPower(backTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing).getPower(frontFacing), backFacing);
-						
-						
-					}
-				}		
+		if (backTile != null && backTile.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing)){			
+			if(backTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing).isOutput(backFacing)&&capability.isInput(frontFacing)) {				
+				capability.setPower(backTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing).getPower(frontFacing), backFacing);						
+			}
+		}		
 				
-				//output updates
-				if (frontTile != null && frontTile.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing)){		
-					if(frontTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing).isInput(frontFacing)){				
-						frontTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing).setPower(capability.getPower(backFacing),frontFacing);
-					}
-				}			
+		//output updates
+		if (frontTile != null && frontTile.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing)){		
+			if(frontTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing).isInput(frontFacing)){				
+				frontTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, backFacing).setPower(capability.getPower(backFacing),frontFacing);
+			}
+		}			
 					
-				if (backTile != null && backTile.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing)){			
-					if(backTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing).isInput(backFacing)) {				
-						backTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing).setPower(capability.getPower(frontFacing),backFacing);
-					}
-				}   	
+		if (backTile != null && backTile.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing)){			
+			if(backTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing).isInput(backFacing)) {				
+				backTile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, frontFacing).setPower(capability.getPower(frontFacing),backFacing);
+			}
+		}   	
        
     } 
     
