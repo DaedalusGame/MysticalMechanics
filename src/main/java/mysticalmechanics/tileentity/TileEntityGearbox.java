@@ -32,7 +32,7 @@ import java.util.List;
 
 public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox, ISoundController {
     EnumFacing from = null;       
-    private boolean isBroken;
+    protected boolean isBroken;
     public int connections = 0;
     public ItemStack[] gears = new ItemStack[]{
             ItemStack.EMPTY,
