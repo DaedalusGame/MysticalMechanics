@@ -131,8 +131,8 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         if (state.getBlock() instanceof BlockGearbox) {
             from = state.getValue(BlockGearbox.facing);
             TileEntity t = world.getTileEntity(getPos().offset(from));
-            if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()) && !getGear(from).isEmpty() && capability.isInput(from)) {
-            	if(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()).isOutput(from.getOpposite())) {
+            if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()) && capability.isInput(from)) {
+            	if(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()).isOutput(from.getOpposite())&& !getGear(from).isEmpty()) {
             		capability.setPower(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()).getPower(from.getOpposite()), from);
             	}else if(getGear(from).isEmpty()&&capability.isInput(from)) {
             		capability.setPower(0, from);
@@ -240,7 +240,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
             return;
         gears[facing.getIndex()] = stack;
         world.playSound(null,pos,RegistryHandler.GEAR_ADD,SoundCategory.BLOCKS,1.0f,1.0f);
-        markDirty();
+        markDirty();       
     }
 
     @Override
@@ -252,6 +252,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         gears[index] = ItemStack.EMPTY;
         world.playSound(null,pos,RegistryHandler.GEAR_REMOVE,SoundCategory.BLOCKS,1.0f,1.0f);
         markDirty();
+        
         return gear;
     }
 
@@ -270,7 +271,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     public int getConnections() {
         return connections;
     }
-
+    
     public boolean activate(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
                             EnumFacing side, float hitX, float hitY, float hitZ) {
         ItemStack heldItem = player.getHeldItem(hand);

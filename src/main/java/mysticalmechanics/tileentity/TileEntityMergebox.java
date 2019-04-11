@@ -1,5 +1,8 @@
 package mysticalmechanics.tileentity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import mysticalmechanics.api.DefaultMechCapability;
 import mysticalmechanics.api.IGearBehavior;
 import mysticalmechanics.api.MysticalMechanicsAPI;
@@ -10,6 +13,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
 public class TileEntityMergebox extends TileEntityGearbox {
+	//public int connections = 0;
+	
     @Override
     public DefaultMechCapability createCapability() {
         return new MergeboxMechCapability();
@@ -27,14 +32,31 @@ public class TileEntityMergebox extends TileEntityGearbox {
         //manages Mergeboxes input;
         for (EnumFacing f : EnumFacing.VALUES) {
             TileEntity t = world.getTileEntity(getPos().offset(f));
-            if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()) && !getGear(f).isEmpty() && capability.isInput(f)) {
-            	if(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).isOutput(f.getOpposite())) {
+            if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()) && capability.isInput(f)) {
+            	if(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).isOutput(f.getOpposite())&& !getGear(f).isEmpty()) {
             		capability.setPower(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).getPower(f.getOpposite()), f);
             	}
             }else if(getGear(f).isEmpty() && capability.isInput(f)) {
             	capability.setPower(0, f);
             }           
         }
+        
+        connections = 0;
+        List<EnumFacing> toUpdate = new ArrayList<>();
+        for (EnumFacing f : EnumFacing.values()) {
+            if (f != null && f != from) {
+                TileEntity t = world.getTileEntity(getPos().offset(f));
+                if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite())) {
+                    if (!getGear(f).isEmpty() && !toUpdate.contains(f)) {
+                    	toUpdate.add(f);
+                    	connections++;                    	
+                    }else if(getGear(f).isEmpty() && toUpdate.contains(f)) {
+                    	toUpdate.remove(f);
+                    	connections--;
+                    }                   
+                }
+            }                  
+        }       
         
         //manages Mergeboxes output
         if (state.getBlock() instanceof BlockGearbox) {
@@ -51,6 +73,12 @@ public class TileEntityMergebox extends TileEntityGearbox {
         }        
         markDirty();
     }
+    
+    //repurposing this for inputTracking;
+    @Override
+    public int getConnections() {
+        return connections;
+    }
 
     private class MergeboxMechCapability extends DefaultMechCapability {
         public double[] powerValues = {0,0,0,0,0,0};
@@ -65,7 +93,7 @@ public class TileEntityMergebox extends TileEntityGearbox {
         @Override
         public double getPower(EnumFacing from) {        	
         	 ItemStack gearStack = getGear(from);
-             if (from != null && gearStack.isEmpty()) {
+             if (from != null && getGear(from).isEmpty()) {
                  return 0;
              }
              
@@ -73,19 +101,19 @@ public class TileEntityMergebox extends TileEntityGearbox {
              double changedPower = 0;
              
              //need to work out solution for null checks that aren't the renderer.
-             if (from == null) {//|| from == null
+             if (from == null && getConnections() != 0) {//|| from == null            	 
                  changedPower = capability.power / ((double) (Math.max(1, getConnections())));
-             } else {
-            	 changedPower = ((double) Math.max(0, getPowerInternal()));
+             } else if(capability.isOutput(from) && !getGear(from).isEmpty() && getConnections() != 0){
+            	 changedPower = ((double) Math.max(0, getPowerInternal()));            	 
              }
              return behavior.transformPower(TileEntityMergebox.this, from, gearStack, changedPower);           
         }
 
         @Override
         public void setPower(double value, EnumFacing from) {
-        	if(from != null && !isOutput(from) && !getGear(from).isEmpty()) {
+        	if(from != null && !isOutput(from)) {
         		double oldPower = powerValues[from.getIndex()];
-        		if(oldPower!=value) {
+        		if(oldPower!=value && value == 0 || !getGear(from).isEmpty() && oldPower!=value) {
         			powerValues[from.getIndex()] = value;
         			onPowerChange();
         		}        		
@@ -104,7 +132,10 @@ public class TileEntityMergebox extends TileEntityGearbox {
         			adjustedPower += powerValues[face.getIndex()];
         		}
         	}
-        	capability.power = adjustedPower;
+        	if(capability.power != adjustedPower) {
+        		capability.power = adjustedPower;
+        		markDirty();
+        	}
         	return capability.power;
         }
 
