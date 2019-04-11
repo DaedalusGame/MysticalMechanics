@@ -23,13 +23,14 @@ import javax.annotation.Nullable;
 
 public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
 	BlockPos front;
-	BlockPos back;
+	BlockPos back;	
     public double angle, lastAngle;
     private boolean isBroken;
     private EnumFacing facing;	
 	private EnumFacing inputSide;
     
-    public DefaultMechCapability capability = new DefaultMechCapability(){
+    public DefaultMechCapability capability = new DefaultMechCapability(){    	
+    	
         @Override
         public void onPowerChange(){
             updateNeighbors();
@@ -40,9 +41,9 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
         public double getPower(EnumFacing from) {
         	if(from == null) {
     			//this should only really be called on block break.
-    			return this.power;
+    			return capability.power;
     		}else if (isValidSide(from)&&isOutput(from)){				
-    			return this.power;
+    			return capability.power;
     		}	
     		return 0;				
         }
@@ -51,11 +52,11 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
         public void setPower(double value, EnumFacing from) {
         	if(from == null && isBroken()) {
     			capability.power = 0;
-    			onPowerChange();
+    			onPowerChange();    			
     		}else if(isInput(from)){					
-    			double oldPower = power; 
-    			if (isValidSide(from)&& oldPower != value){			
-    				this.power = value;				
+    			double oldPower = capability.power; 
+    			if (isValidSide(from) && oldPower != value){			
+    				capability.power = value;				
     				onPowerChange();
     			}
     		}       	
@@ -64,7 +65,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
         @Override
         public boolean isInput(EnumFacing from) {
         	checkAndSetInput(from);
-    		if(inputSide != null && from != null) {
+    		if(inputSide != null && from != null) {    			
     			return inputSide == from;
     		}
     		return false;
@@ -80,10 +81,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
     };  
 
     public void updatePower() {
-    	if(facing == null) {
-			setConnection();
-		}
-		
+    	
 		EnumFacing frontFacing = world.getBlockState(this.pos).getValue(BlockAxle.facing);
 		EnumFacing backFacing = frontFacing.getOpposite();
 		TileEntity frontTile = world.getTileEntity(front);
@@ -129,8 +127,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
         return null;
     }
     
-    public TileEntityAxle getConnectionTile(BlockPos pos, EnumFacing facing) {
-		setConnection();
+    public TileEntityAxle getConnectionTile(BlockPos pos, EnumFacing facing) {		
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile!=null && tile instanceof TileEntityAxle)
 			if(((TileEntityAxle)tile).getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, facing).isOutput(facing.getOpposite()))
@@ -139,8 +136,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
 	}
 
     public void updateNeighbors(){
-    	updatePower();
-        //updateConnection();
+    	updatePower();        
     }
 
     public TileEntityAxle(){
@@ -211,10 +207,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
     }  
     
     @Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-		if(this.facing == null) {
-			setConnection();
-		}
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {		
 		if (capability == MysticalMechanicsAPI.MECH_CAPABILITY) {
 			IBlockState state = world.getBlockState(getPos());						
 			if (state.getBlock() instanceof BlockAxle) {				
@@ -247,6 +240,9 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
     }
     
     public boolean isValidSide(EnumFacing facing){
+    	if(this.facing == null) {
+    		setConnection();
+    	}
 		return facing == this.facing || facing == this.facing.getOpposite();
 	}
     
@@ -256,11 +252,11 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
     
     public void setConnection() {
 		if(facing == null || front == null || back == null) {
-		IBlockState state = world.getBlockState(getPos());
-		facing = state.getValue(BlockAxle.facing).getOpposite();
-		front = getPos().offset(facing);
-		back = getPos().offset(facing.getOpposite());		
-		markDirty();
+			IBlockState state = world.getBlockState(getPos());    	
+			facing = state.getValue(BlockAxle.facing).getOpposite();
+			front = getPos().offset(facing);
+			back = getPos().offset(facing.getOpposite());					
+			markDirty();
 		}
 	}
     
@@ -278,7 +274,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
 			TileEntity t = world.getTileEntity(getPos().offset(from));
 			if(t!=null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from)) {				
 				//if the tile entity is a output and we dont have power set the inputside. 
-				if(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from).isOutput(from.getOpposite())&& capability.power == 0) {					
+				if(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from).isOutput(from.getOpposite()) && capability.power == 0) {					
 					this.inputSide = from;					
 				}
 			}
@@ -286,8 +282,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
 		
 	}
     
-    public void neighborChanged(BlockPos from) {
-		setConnection();
+    public void neighborChanged(BlockPos from) {		
 		if(isValidSide(from)) {			
 			checkAndSetInput(comparePosToSides(from));		
 			updateNeighbors();

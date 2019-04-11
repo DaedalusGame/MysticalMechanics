@@ -21,14 +21,10 @@ public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEnt
             if (state.getBlock() instanceof BlockGearbox){
 				int face = 0;
 				for (ItemStack gear:tile.gears) {					
-					if (!gear.isEmpty()) {
-						//Culling is good unless there's a specific reason to disable it.
-						//GlStateManager.disableCull();
-						//there's no transparency in this model and glblend isn't enabled.
-						//GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);								
+					if (!gear.isEmpty()) {								
 
 						EnumFacing direction = EnumFacing.VALUES[face];
-						double powerRatio = tile.capability.getPower(direction);						
+						//double powerRatio = tile.capability.getPower(direction);						
 
 						GlStateManager.pushMatrix();
 						GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
@@ -57,13 +53,15 @@ public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEnt
 
 						}
 						
+						double angle = tile.angle;
+		                double lastAngle = tile.lastAngle;
+						
 						//render the gears and rotate them based on how much power they have.
 						GlStateManager.translate(0, 0, -0.375);
 						GlStateManager.scale(0.875, 0.875, 0.875);
 						GlStateManager.rotate(
-								((float) (partialTicks * tile.angle) + (1 - partialTicks) * (float) tile.lastAngle)
-										* (float) powerRatio,
-								0, 0, 1);
+								((float) (partialTicks * angle) + (1 - partialTicks) * (float) lastAngle), 0, 0, 1);									
+								
 						Minecraft.getMinecraft().getRenderItem().renderItem(gear,
 								ItemCameraTransforms.TransformType.FIXED);
 						GlStateManager.popMatrix();
