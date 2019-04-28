@@ -20,19 +20,37 @@ import javax.annotation.Nullable;
 public class TileEntityCreativeMechSource extends TileEntity implements ITickable {
     int ticksExisted = 0;
     private double[] wantedPower = new double[]{10,20,40,80,160,320};
+    private double currentPower = 10;
     private int wantedPowerIndex = 0;
+    private boolean isBroken;
+    
     public DefaultMechCapability capability = new DefaultMechCapability(){
-        @Override
-        public void setPower(double value, EnumFacing from) {
-            if(from == null)
-                super.setPower(value, from);
-        }
+    	@Override
+    	public double getPower(EnumFacing from) {				
+    		return currentPower;
+    	}
+    	
+    	@Override
+    	public void setPower(double value, EnumFacing from) {		
+    		if(from == null) {
+    			currentPower = value;
+    			onPowerChange();
+    		}
+    	}
+    	
+    	@Override
+    	public boolean isOutput(EnumFacing face) {
+    		return true;
+    	}
+    	@Override
+    	public boolean isInput(EnumFacing face) {
+    		return false;
+    	}
 
         @Override
-        public void onPowerChange(){
-            TileEntityCreativeMechSource source = TileEntityCreativeMechSource.this;
-            source.updateNeighbors();
-            source.markDirty();
+        public void onPowerChange(){            
+            updateNeighbors();
+            markDirty();
         }
     };
 
@@ -44,7 +62,7 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag){
         super.writeToNBT(tag);
-        tag.setDouble("mech_power", capability.power);
+        tag.setDouble("mech_power", wantedPower[wantedPowerIndex]);
         tag.setInteger("level",wantedPowerIndex);
         return tag;
     }
@@ -108,8 +126,9 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
             TileEntity t = world.getTileEntity(getPos().offset(f));
             if (t != null){
                 if (t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite())){
-                    t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(capability.getPower(f.getOpposite()),f.getOpposite());
-                   // t.markDirty(); this is redundant due to being called once the power changes.
+                	if(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).isInput(f.getOpposite())) {
+                		t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(capability.getPower(f.getOpposite()),f.getOpposite());
+                	}	
                 }
             }
         }
@@ -120,10 +139,13 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
         ticksExisted++;
         double wantedPower = this.wantedPower[wantedPowerIndex];
         if (capability.getPower(null) != wantedPower){
-            capability.setPower(wantedPower,null);
-            markDirty();
-        }
-        updateNeighbors();
+            capability.setPower(wantedPower,null);            
+        }        
     }
+    
+    
+	public boolean isBroken() {		
+		return this.isBroken;
+	}
 }
 
