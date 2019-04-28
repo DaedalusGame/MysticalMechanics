@@ -42,8 +42,8 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
             ItemStack.EMPTY,
             ItemStack.EMPTY
     };
-    
-    public double angle, lastAngle;
+    public double[] angles = new double[6];
+    public double[] lastAngles = new double[6];
 
     public DefaultMechCapability capability;
 
@@ -101,10 +101,11 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                 		this.power = 0;
                 		onPowerChange();
                 	}
-                    
                 }        
-                if (isInput(from) && !gearStack.isEmpty()) {        	
-                	double oldPower = capability.power;            
+                if (isInput(from) && !gearStack.isEmpty()) {
+                    IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
+                	double oldPower = capability.power;
+                	value = behavior.transformPower(TileEntityGearbox.this,from,gearStack,value);
                     if (oldPower != value) {
                     	capability.power = value;
                         onPowerChange();
@@ -146,7 +147,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
             if (f != null && f != from) {
                 TileEntity t = world.getTileEntity(getPos().offset(f));
                 if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite())) {                	
-                    if (!getGear(f).isEmpty()) {
+                    if (!getGear(f).isEmpty() && capability.getPower(f) != 0) {
                     	connections++;
                     }
                     toUpdate.add(f);
@@ -174,7 +175,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
-        tag.setDouble("mech_power", capability.power);
+        capability.writeToNBT(tag);
         if (from != null) {
             tag.setInteger("from", from.getIndex());
         }
@@ -188,9 +189,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        if (tag.hasKey("mech_power")) {
-            capability.power = tag.getDouble("mech_power");
-        }
+        capability.readFromNBT(tag);
         if (tag.hasKey("from")) {
             from = EnumFacing.getFront(tag.getInteger("from"));
         }
@@ -349,7 +348,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
 
     @Override
     public boolean shouldPlaySound(int id) {
-        double power =  capability.getPower(null);
+        double power = capability.getPower(null);
         int level = getSoundLevel();
         int speedindex = getSpeedindex(power);
         return speedindex > 0 && level > 0 && id == SOUND_IDS[speedindex - 1 + level];
@@ -410,13 +409,25 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     public void update() {
         if (world.isRemote) {
             handleSound();
-            lastAngle = angle;
-            angle += capability.getPower(null);
             for(EnumFacing facing : EnumFacing.VALUES) {
+                updateAngle(facing);
                 ItemStack gear = getGear(facing);
                 IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gear);
                 behavior.visualUpdate(this,facing,gear);
             }            
         }
+    }
+
+    protected void updateAngle(EnumFacing facing) {
+        lastAngles[facing.getIndex()] = angles[facing.getIndex()];
+        angles[facing.getIndex()] += capability.getPower(facing);
+    }
+
+    public double getAngle(EnumFacing face) {
+        return angles[face.getIndex()];
+    }
+
+    public double getLastAngle(EnumFacing face) {
+        return lastAngles[face.getIndex()];
     }
 }

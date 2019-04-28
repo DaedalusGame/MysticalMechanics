@@ -81,7 +81,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
     };  
 
     public void updatePower() {
-    	
+    	setConnection();
 		EnumFacing frontFacing = world.getBlockState(this.pos).getValue(BlockAxle.facing);
 		EnumFacing backFacing = frontFacing.getOpposite();
 		TileEntity frontTile = world.getTileEntity(front);
@@ -187,7 +187,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
 		if(tag.hasKey("back")){
 			int[] pos = tag.getIntArray("back");
 			this.back = new BlockPos(pos[0],pos[1],pos[2]);
-		}		
+		}
 	}   
 
     @Override

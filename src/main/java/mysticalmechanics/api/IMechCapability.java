@@ -1,5 +1,6 @@
 package mysticalmechanics.api;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
 public interface IMechCapability {
@@ -34,4 +35,8 @@ public interface IMechCapability {
     default boolean isOutput(EnumFacing from) {
         return true;
     }
+
+    default void writeToNBT(NBTTagCompound tag) {}
+
+    default void readFromNBT(NBTTagCompound tag) {}
 }

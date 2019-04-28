@@ -1,5 +1,6 @@
 package mysticalmechanics.api;
 
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 
 public class DefaultMechCapability implements IMechCapability {
@@ -22,5 +23,15 @@ public class DefaultMechCapability implements IMechCapability {
     @Override
     public void onPowerChange() {
 
+    }
+
+    @Override
+    public void readFromNBT(NBTTagCompound tag) {
+        power = tag.getDouble("mech_power");
+    }
+
+    @Override
+    public void writeToNBT(NBTTagCompound tag) {
+        tag.setDouble("mech_power",power);
     }
 }

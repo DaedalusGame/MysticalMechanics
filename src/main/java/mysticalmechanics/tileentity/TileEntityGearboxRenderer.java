@@ -53,8 +53,8 @@ public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEnt
 
 						}
 						
-						double angle = tile.angle;
-		                double lastAngle = tile.lastAngle;
+						double angle = tile.getAngle(direction);
+		                double lastAngle = tile.getLastAngle(direction);
 						
 						//render the gears and rotate them based on how much power they have.
 						GlStateManager.translate(0, 0, -0.375);
