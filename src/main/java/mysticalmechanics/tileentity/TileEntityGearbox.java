@@ -275,11 +275,14 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     public boolean activate(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
                             EnumFacing side, float hitX, float hitY, float hitZ) {
         ItemStack heldItem = player.getHeldItem(hand);
-        if (!heldItem.isEmpty() && canAttachGear(side,heldItem)) {
-            if (getGear(side).isEmpty() && MysticalMechanicsAPI.IMPL.isValidGear(heldItem)) {
+        EnumFacing attachSide = side;
+        if(player.isSneaking())
+            attachSide = attachSide.getOpposite();
+        if (!heldItem.isEmpty() && canAttachGear(attachSide,heldItem)) {
+            if (getGear(attachSide).isEmpty() && MysticalMechanicsAPI.IMPL.isValidGear(heldItem)) {
                 ItemStack gear = heldItem.copy();
                 gear.setCount(1);
-                attachGear(side,gear);
+                attachGear(attachSide,gear);
                 heldItem.shrink(1);
                 if (heldItem.isEmpty()) {
                     player.setHeldItem(hand, ItemStack.EMPTY);
@@ -287,8 +290,8 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                 capability.onPowerChange();
                 return true;
             }
-        } else if (!getGear(side).isEmpty()) {
-            ItemStack gear = detachGear(side);
+        } else if (!getGear(attachSide).isEmpty()) {
+            ItemStack gear = detachGear(attachSide);
             if (!world.isRemote) {
                 world.spawnEntity(new EntityItem(world, player.posX, player.posY + player.height / 2.0f, player.posZ, gear));
             }

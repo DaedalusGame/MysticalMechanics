@@ -41,7 +41,10 @@ public class BlockGearbox extends Block {
 
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing face, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer){
-        return getDefaultState().withProperty(facing, EnumFacing.getDirectionFromEntityLiving(pos, placer));
+        EnumFacing facing = EnumFacing.getDirectionFromEntityLiving(pos, placer);
+        if(placer.isSneaking())
+            facing = facing.getOpposite();
+        return getDefaultState().withProperty(BlockGearbox.facing, facing);
     }
 
     @Override
