@@ -19,7 +19,7 @@ public class ClientProxy implements IProxy {
     }
 
     @Override
-    public void playMachineSound(TileEntity tile, int id, SoundEvent soundIn, SoundCategory categoryIn, boolean repeat, float volume, float pitch, float xIn, float yIn, float zIn) {
-        Minecraft.getMinecraft().getSoundHandler().playSound(new MachineSound(tile,id,soundIn,categoryIn,repeat,volume,pitch,xIn,yIn,zIn));
+    public void playMachineSound(TileEntity tile, int id, int playId, SoundEvent soundIn, SoundCategory categoryIn, boolean repeat, float volume, float pitch, float xIn, float yIn, float zIn) {
+        Minecraft.getMinecraft().getSoundHandler().playSound(new MachineSound(tile,id,playId,soundIn,categoryIn,repeat,volume,pitch,xIn,yIn,zIn));
     }
 }

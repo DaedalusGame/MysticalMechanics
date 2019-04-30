@@ -10,3 +10,12 @@ item.gear_gold_off.name=Redstone Gear
 
 subtitles.gear.add=Gear attached
 subtitles.gear.remove=Gear detached
+
+mysticalmechanics.unit.default=%s R
+
+mysticalmechanics.tooltip.creative_source.set=Set to output: %s R
+
+mysticalmechanics.probe.axle_length=Length:
+mysticalmechanics.probe.power=⚙ %s
+mysticalmechanics.probe.input_power=§9⬊§r %s
+mysticalmechanics.probe.output_power=§6⬉§r %s

@@ -1,6 +1,11 @@
 package mysticalmechanics.util;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.item.ItemStack;
 
 public class RenderUtil {
     public static int lightx = 0xF000F0;
@@ -49,5 +54,61 @@ public class RenderUtil {
         b.pos(x2, y1, z2).tex(textures[5].maxU,textures[5].minV).color(255, 255, 255, 255).normal(1*inversions[5], 0, 0).endVertex();
         b.pos(x2, y2, z2).tex(textures[5].maxU,textures[5].maxV).color(255, 255, 255, 255).normal(1*inversions[5], 0, 0).endVertex();
         b.pos(x2, y2, z1).tex(textures[5].minU,textures[5].maxV).color(255, 255, 255, 255).normal(1*inversions[5], 0, 0).endVertex();
+    }
+
+    public static boolean renderItemStack(Minecraft mc, RenderItem itemRender, ItemStack itm, int x, int y, String txt) {
+        GlStateManager.color(1F, 1F, 1F);
+
+        boolean rc = false;
+        if (!itm.isEmpty() && itm.getItem() != null) {
+            rc = true;
+            GlStateManager.pushMatrix();
+
+            GlStateManager.translate(x, y, 32.0F);
+            GlStateManager.scale(0.5f,0.5f,0.5f);
+            GlStateManager.color(1F, 1F, 1F, 1F);
+            GlStateManager.enableRescaleNormal();
+            GlStateManager.enableLighting();
+            short short1 = 240;
+            short short2 = 240;
+            net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
+            OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, short1 / 1.0F, short2 / 1.0F);
+            itemRender.renderItemAndEffectIntoGUI(itm, 0, 0);
+            itemRender.renderItemOverlayIntoGUI(mc.fontRenderer, itm, 0, 0, txt);
+            GlStateManager.popMatrix();
+            GlStateManager.disableRescaleNormal();
+            GlStateManager.disableLighting();
+        }
+
+        return rc;
+    }
+
+    public static int renderText(Minecraft mc, int x, int y, String txt) {
+        GlStateManager.color(1.0F, 1.0F, 1.0F);
+
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(0.0F, 0.0F, 32.0F);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.enableRescaleNormal();
+        GlStateManager.enableLighting();
+        net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting();
+
+        GlStateManager.disableLighting();
+        GlStateManager.disableDepth();
+        GlStateManager.disableBlend();
+        int width = mc.fontRenderer.getStringWidth(txt);
+        mc.fontRenderer.drawStringWithShadow(txt, x, y, 16777215);
+        GlStateManager.enableLighting();
+        GlStateManager.enableDepth();
+        // Fixes opaque cooldown overlay a bit lower
+        // TODO: check if enabled blending still screws things up down the line.
+        GlStateManager.enableBlend();
+
+
+        GlStateManager.popMatrix();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.disableLighting();
+
+        return width;
     }
 }

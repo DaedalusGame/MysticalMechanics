@@ -1,15 +1,14 @@
 package mysticalmechanics;
 
-import mysticalmechanics.api.DefaultMechCapability;
-import mysticalmechanics.api.IGearBehavior;
-import mysticalmechanics.api.IMechCapability;
-import mysticalmechanics.api.MysticalMechanicsAPI;
+import mysticalmechanics.api.*;
 import mysticalmechanics.apiimpl.MysticalMechanicsAPIImpl;
+import mysticalmechanics.compat.TheOneProbe;
 import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.tileentity.TileEntityAxle;
 import mysticalmechanics.tileentity.TileEntityCreativeMechSource;
 import mysticalmechanics.tileentity.TileEntityGearbox;
 import mysticalmechanics.tileentity.TileEntityMergebox;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTBase;
@@ -19,11 +18,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreIngredient;
 
 import javax.annotation.Nullable;
@@ -41,9 +44,22 @@ public class MysticalMechanics
     @Mod.Instance(MysticalMechanics.MODID)
     public static MysticalMechanics instance;
 
+    public static Configuration config;
+
+    public static String FORCE_UNIT;
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        if(config == null)
+        {
+            config = new Configuration(event.getSuggestedConfigurationFile());
+            loadConfig();
+        }
+
+        if(Loader.isModLoaded("theoneprobe"))
+            TheOneProbe.init();
+
         proxy.preInit();
 
         MysticalMechanicsAPI.IMPL = new MysticalMechanicsAPIImpl();
@@ -65,9 +81,51 @@ public class MysticalMechanics
         }, DefaultMechCapability::new);
     }
 
+    private void loadConfig() {
+        FORCE_UNIT = config.getString("forceUnit", "units", "", "Set this to a non-empty string to force a specific unit.");
+    }
+
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
+        MysticalMechanicsAPI.IMPL.registerUnit(new IMechUnit<Double>() {
+            @Override
+            public String getName() {
+                return "default";
+            }
+
+            @Override
+            public int getPriority() {
+                return -999999;
+            }
+
+            @Override
+            public double getZero() {
+                return 0;
+            }
+
+            @Override
+            public double getNeutral() {
+                return 1;
+            }
+
+            @Override
+            public double convertToPower(Double unit) {
+                return unit;
+            }
+
+            @Override
+            public Double convertToUnit(double power) {
+                return power;
+            }
+
+            @Override
+            @SideOnly(Side.CLIENT)
+            public String format(double power) {
+                return I18n.format("mysticalmechanics.unit.default",power);
+            }
+        });
+
         GameRegistry.registerTileEntity(TileEntityAxle.class,"mysticalmechanics:axle");
         GameRegistry.registerTileEntity(TileEntityGearbox.class,"mysticalmechanics:gearbox");
         GameRegistry.registerTileEntity(TileEntityMergebox.class,"mysticalmechanics:mergebox");

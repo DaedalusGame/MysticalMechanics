@@ -1,10 +1,15 @@
 package mysticalmechanics.block;
 
 
+import mcjty.theoneprobe.api.IProbeHitData;
+import mcjty.theoneprobe.api.IProbeInfo;
+import mcjty.theoneprobe.api.IProbeInfoAccessor;
+import mcjty.theoneprobe.api.ProbeMode;
 import mysticalmechanics.tileentity.TileEntityAxle;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyDirection;
+import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
@@ -23,7 +28,8 @@ import java.util.Random;
 
 public class BlockAxle extends Block {
 	
-	public static final PropertyDirection facing = PropertyDirection.create("facing"); 
+	//public static final PropertyDirection facing = PropertyDirection.create("facing");
+    public static final PropertyEnum<EnumFacing.Axis> axis = PropertyEnum.<EnumFacing.Axis>create("axis", EnumFacing.Axis.class);
 	
     public BlockAxle(Material material) {
         super(material);
@@ -31,27 +37,28 @@ public class BlockAxle extends Block {
 
     @Override
     public BlockStateContainer createBlockState() {
-    	return new BlockStateContainer(this, facing);    	        
+    	return new BlockStateContainer(this, axis);
     }
 
     @Override
     public int getMetaFromState(IBlockState state) {
-    	return state.getValue(facing).ordinal();       
+    	return state.getValue(axis).ordinal();
     }
 
     @Override
     public IBlockState getStateFromMeta(int meta) {
-    	return getDefaultState().withProperty(facing, EnumFacing.getFront(meta));        
+        EnumFacing.Axis[] axisSet = EnumFacing.Axis.values();
+        return getDefaultState().withProperty(axis, axisSet[meta % axisSet.length]);
     }
 
     @Override
     public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing face, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer) {
-    	return getDefaultState().withProperty(facing, face);       
+    	return getDefaultState().withProperty(axis, face.getAxis());
     }   
 
     @Override
     public boolean isSideSolid(IBlockState state, IBlockAccess world, BlockPos pos, EnumFacing side) {    	
-        return side.getAxis() != state.getValue(facing).getAxis();
+        return side.getAxis() != state.getValue(axis);
     }
 
     @Override
@@ -92,8 +99,8 @@ public class BlockAxle extends Block {
     
     @Override
     public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-    	TileEntityAxle tile = (TileEntityAxle) world.getTileEntity(pos);
-    	tile.setConnection();    	
+    	//TileEntityAxle tile = (TileEntityAxle) world.getTileEntity(pos);
+    	//tile.setConnection();
     }
 
     @Override
@@ -110,7 +117,7 @@ public class BlockAxle extends Block {
 
     @Override
     public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-        switch (state.getValue(facing).getAxis()) {
+        switch (state.getValue(axis)) {
             case Y:
                 return new AxisAlignedBB(0.375, 0, 0.375, 0.625, 1.0, 0.625);
             case Z:
@@ -120,4 +127,11 @@ public class BlockAxle extends Block {
         }
         return new AxisAlignedBB(0.375, 0, 0.375, 0.625, 1.0, 0.625);
     }
+
+    /*@Override
+    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
+        TileEntity tile = world.getTileEntity(data.getPos());
+        if(tile instanceof TileEntityAxle)
+            ((TileEntityAxle) tile).addProbeInfo(mode,probeInfo,player,world,blockState,data);
+    }*/
 }

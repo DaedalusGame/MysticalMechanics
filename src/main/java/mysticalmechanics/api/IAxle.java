@@ -33,6 +33,6 @@ public interface IAxle {
         int dy = Math.abs(left.getY() - right.getY());
         int dz = Math.abs(left.getZ() - right.getZ());
 
-        return Math.max(Math.max(dx, dy), dz); //Note that by default axles don't bend, so their distance is simply dx, dy or dz, whichever is highest
+        return Math.max(Math.max(dx, dy), dz) - 1; //Note that by default axles don't bend, so their distance is simply dx, dy or dz, whichever is highest
     }
 }

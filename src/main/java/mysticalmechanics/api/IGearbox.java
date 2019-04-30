@@ -30,6 +30,14 @@ public interface IGearbox {
     boolean canAttachGear(EnumFacing facing, ItemStack stack);
 
     /**
+     * @param facing the side to check for.
+     * @return whether the specified face can even have a gear attached.
+     */
+    default boolean canAttachGear(EnumFacing facing) {
+        return true;
+    }
+
+    /**
      * Use/Implement this method for the number of connected outputs this gearbox has. Every connected output should only receive power divided by this value to prevent power loops.
      *
      * @return the number of directly connected mechanical blocks on output faces.

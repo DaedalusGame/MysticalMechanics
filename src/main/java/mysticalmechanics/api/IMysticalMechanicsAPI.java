@@ -5,6 +5,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import java.util.function.Function;
 
 public interface IMysticalMechanicsAPI {
     /**
@@ -23,6 +24,14 @@ public interface IMysticalMechanicsAPI {
      * @param resourceLocation key representing a gear behavior registry entry.
      */
     void unregisterGear(ResourceLocation resourceLocation);
+
+    /**
+     * Quick method for replacing/augmenting a gear behavior
+     *
+     * @param resourceLocation key representing a gear behavior registry entry.
+     * @param modifier function for how the behavior should be modified
+     */
+    void modifyGear(ResourceLocation resourceLocation, Function<IGearBehavior,IGearBehavior> modifier);
 
     /**
      * @return an iterable datastructure of currently registered gear behavior registry keys.
@@ -46,4 +55,12 @@ public interface IMysticalMechanicsAPI {
      * @return whether the provided ItemStack is a valid, registered gear.
      */
     boolean isValidGear(ItemStack stack);
+
+    void registerUnit(IMechUnit unit);
+
+    IMechUnit getDefaultUnit();
+
+    IMechUnit getUnit(String name);
+
+    Iterable<IMechUnit> getUnits();
 }

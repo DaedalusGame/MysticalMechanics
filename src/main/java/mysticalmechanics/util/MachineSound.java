@@ -10,11 +10,13 @@ public class MachineSound extends PositionedSound implements ITickableSound {
     protected TileEntity boundTile;
     protected boolean donePlaying;
     protected int id;
+    protected int playId;
 
-    public MachineSound(TileEntity tile, int id, SoundEvent soundIn, SoundCategory categoryIn, boolean repeatIn, float volumeIn, float pitchIn, float xIn, float yIn, float zIn) {
+    public MachineSound(TileEntity tile, int id, int playId, SoundEvent soundIn, SoundCategory categoryIn, boolean repeatIn, float volumeIn, float pitchIn, float xIn, float yIn, float zIn) {
         super(soundIn, categoryIn);
         this.boundTile = tile;
         this.id = id;
+        this.playId = playId;
         this.volume = volumeIn;
         this.pitch = pitchIn;
         this.xPosF = xIn;
@@ -35,12 +37,12 @@ public class MachineSound extends PositionedSound implements ITickableSound {
             donePlaying = true;
         else if(boundTile instanceof ISoundController) {
             ISoundController controller = (ISoundController) boundTile;
-            if(!controller.shouldPlaySound(id))
+            if(controller.getPlayId(id) != playId)
                 donePlaying = true;
             volume = controller.getCurrentVolume(id,volume);
             pitch = controller.getCurrentPitch(id,pitch);
-            if(donePlaying && controller.isSoundPlaying(id))
-                controller.stopSound(id);
+            //if(donePlaying)
+            //    controller.stopSound(id);
         }
     }
 }

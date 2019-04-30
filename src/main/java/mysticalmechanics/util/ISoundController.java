@@ -5,15 +5,21 @@ public interface ISoundController {
 
     void stopSound(int id);
 
-    boolean isSoundPlaying(int id);
+    default boolean isSoundPlaying(int id) {
+        return getPlayId(id) > 0;
+    }
+
+    int getPlayId(int id);
 
     int[] getSoundIDs();
 
     default void handleSound() {
         for (int id : getSoundIDs()) {
-            if(shouldPlaySound(id) && !isSoundPlaying(id))
+            boolean shouldPlay = shouldPlaySound(id);
+            boolean isPlaying = isSoundPlaying(id);
+            if(shouldPlay && !isPlaying)
                 playSound(id);
-            if(!shouldPlaySound(id) && isSoundPlaying(id))
+            if(!shouldPlay && isPlaying)
                 stopSound(id);
         }
     }

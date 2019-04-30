@@ -1,16 +1,24 @@
 package mysticalmechanics.apiimpl;
 
+import mysticalmechanics.MysticalMechanics;
 import mysticalmechanics.api.IGearBehavior;
+import mysticalmechanics.api.IMechUnit;
 import mysticalmechanics.api.IMysticalMechanicsAPI;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.function.Function;
 
 public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
     public static LinkedHashMap<ResourceLocation, GearStruct> GEAR_REGISTRY = new LinkedHashMap<>();
+    public static LinkedHashMap<String, IMechUnit> UNITS = new LinkedHashMap<>();
+
+    private IMechUnit unitDefault;
+    private boolean unitDirty;
 
     @Override
     public void registerGear(ResourceLocation resourceLocation, Ingredient matcher, IGearBehavior behavior) {
@@ -20,6 +28,14 @@ public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
     @Override
     public void unregisterGear(ResourceLocation resourceLocation) {
         GEAR_REGISTRY.remove(resourceLocation);
+    }
+
+    @Override
+    public void modifyGear(ResourceLocation resourceLocation, Function<IGearBehavior, IGearBehavior> modifier) {
+        GearStruct struct = GEAR_REGISTRY.get(resourceLocation);
+        if(struct != null) {
+            struct.behavior = modifier.apply(struct.behavior);
+        }
     }
 
     @Override
@@ -50,6 +66,38 @@ public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
                 if (struct.ingredient.apply(stack))
                     return true;
         return false;
+    }
+
+    @Override
+    public void registerUnit(IMechUnit unit) {
+        UNITS.put(unit.getName(),unit);
+        unitDirty = true;
+    }
+
+    @Override
+    public IMechUnit getDefaultUnit() {
+        if(unitDirty) {
+            if(!MysticalMechanics.FORCE_UNIT.isEmpty())
+                unitDefault = getUnit(MysticalMechanics.FORCE_UNIT);
+            if(unitDefault == null)
+                unitDefault = getHighestPriorityUnit();
+            unitDirty = false;
+        }
+        return unitDefault;
+    }
+
+    private IMechUnit getHighestPriorityUnit() {
+        return UNITS.values().stream().max(Comparator.comparingInt(IMechUnit::getPriority)).orElse(null);
+    }
+
+    @Override
+    public IMechUnit getUnit(String name) {
+        return UNITS.get(name);
+    }
+
+    @Override
+    public Iterable<IMechUnit> getUnits() {
+        return UNITS.values();
     }
 
     static class GearStruct {

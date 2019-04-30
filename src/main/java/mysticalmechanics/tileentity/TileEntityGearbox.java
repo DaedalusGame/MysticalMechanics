@@ -27,6 +27,7 @@ import net.minecraftforge.common.capabilities.Capability;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     public static final int SOUND_FAST_LV3 = 9;
     public static final int[] SOUND_IDS = new int[]{SOUND_SLOW_LV1,SOUND_SLOW_LV2,SOUND_SLOW_LV3,SOUND_MID_LV1,SOUND_MID_LV2,SOUND_MID_LV3,SOUND_FAST_LV1,SOUND_FAST_LV2,SOUND_FAST_LV3};
 
-    HashSet<Integer> soundsPlaying = new HashSet<>();
+    HashMap<Integer,Integer> soundsPlaying = new HashMap<>();
 
     public TileEntityGearbox() {
         super();
@@ -299,46 +300,49 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
 
     @Override
     public void playSound(int id) {
+        int playId = -getPlayId(id) + 1;
         switch (id) {
             case SOUND_SLOW_LV1:
-                MysticalMechanics.proxy.playMachineSound(this, SOUND_SLOW_LV1, RegistryHandler.GEARBOX_SLOW_LV1, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f,(float)pos.getY()+0.5f,(float)pos.getZ()+0.5f);
+                MysticalMechanics.proxy.playMachineSound(this, SOUND_SLOW_LV1, playId, RegistryHandler.GEARBOX_SLOW_LV1, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f, (float)pos.getY()+0.5f, (float)pos.getZ()+0.5f);
                 break;
             case SOUND_SLOW_LV2:
-                MysticalMechanics.proxy.playMachineSound(this, SOUND_SLOW_LV2, RegistryHandler.GEARBOX_SLOW_LV2, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f,(float)pos.getY()+0.5f,(float)pos.getZ()+0.5f);
+                MysticalMechanics.proxy.playMachineSound(this, SOUND_SLOW_LV2, playId, RegistryHandler.GEARBOX_SLOW_LV2, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f, (float)pos.getY()+0.5f, (float)pos.getZ()+0.5f);
                 break;
             case SOUND_SLOW_LV3:
-                MysticalMechanics.proxy.playMachineSound(this, SOUND_SLOW_LV3, RegistryHandler.GEARBOX_SLOW_LV3, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f,(float)pos.getY()+0.5f,(float)pos.getZ()+0.5f);
+                MysticalMechanics.proxy.playMachineSound(this, SOUND_SLOW_LV3, playId, RegistryHandler.GEARBOX_SLOW_LV3, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f, (float)pos.getY()+0.5f, (float)pos.getZ()+0.5f);
                 break;
             case SOUND_MID_LV1:
-                MysticalMechanics.proxy.playMachineSound(this, SOUND_MID_LV1, RegistryHandler.GEARBOX_MID_LV1, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f,(float)pos.getY()+0.5f,(float)pos.getZ()+0.5f);
+                MysticalMechanics.proxy.playMachineSound(this, SOUND_MID_LV1, playId, RegistryHandler.GEARBOX_MID_LV1, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f, (float)pos.getY()+0.5f, (float)pos.getZ()+0.5f);
                 break;
             case SOUND_MID_LV2:
-                MysticalMechanics.proxy.playMachineSound(this, SOUND_MID_LV2, RegistryHandler.GEARBOX_MID_LV2, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f,(float)pos.getY()+0.5f,(float)pos.getZ()+0.5f);
+                MysticalMechanics.proxy.playMachineSound(this, SOUND_MID_LV2, playId, RegistryHandler.GEARBOX_MID_LV2, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f, (float)pos.getY()+0.5f, (float)pos.getZ()+0.5f);
                 break;
             case SOUND_MID_LV3:
-                MysticalMechanics.proxy.playMachineSound(this, SOUND_MID_LV3, RegistryHandler.GEARBOX_MID_LV3, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f,(float)pos.getY()+0.5f,(float)pos.getZ()+0.5f);
+                MysticalMechanics.proxy.playMachineSound(this, SOUND_MID_LV3, playId, RegistryHandler.GEARBOX_MID_LV3, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f, (float)pos.getY()+0.5f, (float)pos.getZ()+0.5f);
                 break;
             case SOUND_FAST_LV1:
-                MysticalMechanics.proxy.playMachineSound(this, SOUND_FAST_LV1, RegistryHandler.GEARBOX_FAST_LV1, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f,(float)pos.getY()+0.5f,(float)pos.getZ()+0.5f);
+                MysticalMechanics.proxy.playMachineSound(this, SOUND_FAST_LV1, playId, RegistryHandler.GEARBOX_FAST_LV1, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f, (float)pos.getY()+0.5f, (float)pos.getZ()+0.5f);
                 break;
             case SOUND_FAST_LV2:
-                MysticalMechanics.proxy.playMachineSound(this, SOUND_FAST_LV2, RegistryHandler.GEARBOX_FAST_LV2, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f,(float)pos.getY()+0.5f,(float)pos.getZ()+0.5f);
+                MysticalMechanics.proxy.playMachineSound(this, SOUND_FAST_LV2, playId, RegistryHandler.GEARBOX_FAST_LV2, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f, (float)pos.getY()+0.5f, (float)pos.getZ()+0.5f);
                 break;
             case SOUND_FAST_LV3:
-                MysticalMechanics.proxy.playMachineSound(this, SOUND_FAST_LV2, RegistryHandler.GEARBOX_FAST_LV3, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f,(float)pos.getY()+0.5f,(float)pos.getZ()+0.5f);
+                MysticalMechanics.proxy.playMachineSound(this, SOUND_FAST_LV2, playId, RegistryHandler.GEARBOX_FAST_LV3, SoundCategory.BLOCKS, true, 1.0f, 1.0f, (float)pos.getX()+0.5f, (float)pos.getY()+0.5f, (float)pos.getZ()+0.5f);
                 break;
         }
-        soundsPlaying.add(id);
+        soundsPlaying.put(id,playId);
     }
 
     @Override
     public void stopSound(int id) {
-        soundsPlaying.remove(id);
+        soundsPlaying.put(id,-getPlayId(id));
     }
 
     @Override
-    public boolean isSoundPlaying(int id) {
-        return soundsPlaying.contains(id);
+    public int getPlayId(int id) {
+        if(!soundsPlaying.containsKey(id))
+            return 0;
+        return soundsPlaying.get(id);
     }
 
     @Override

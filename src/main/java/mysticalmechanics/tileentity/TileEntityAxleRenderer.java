@@ -10,8 +10,10 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 
 public class TileEntityAxleRenderer extends TileEntitySpecialRenderer<TileEntityAxle> {
@@ -36,8 +38,8 @@ public class TileEntityAxleRenderer extends TileEntitySpecialRenderer<TileEntity
             IBlockState state = tile.getWorld().getBlockState(tile.getPos());
             if (state.getBlock() instanceof BlockAxle){
                 
-            	EnumFacing.Axis axis = state.getValue(BlockAxle.facing).getAxis();
-            	EnumFacing facing = state.getValue(BlockAxle.facing);
+            	EnumFacing.Axis axis = tile.getAxis();
+            	//EnumFacing facing = state.getValue(BlockAxle.facing);
                 ResourceLocation texture = new ResourceLocation(Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getTexture(state).getIconName());
                 texture = new ResourceLocation(texture.getResourceDomain(),"textures/"+texture.getResourcePath()+".png");
 
@@ -61,17 +63,15 @@ public class TileEntityAxleRenderer extends TileEntitySpecialRenderer<TileEntity
                     GL11.glRotated(90, 0, 1, 0);
                     GL11.glRotated(90, 1, 0, 0);
                 }
-                
-                TileEntityAxle frontAxle = tile.getConnectionTile(tile.getPos().offset(facing),facing);
-                TileEntityAxle backAxle = tile.getConnectionTile(tile.getPos().offset(facing.getOpposite()), facing.getOpposite());              
-                
-                if(frontAxle != null) {
-                	 tile.angle = frontAxle.angle;
-                     tile.lastAngle = frontAxle.lastAngle;
-                }else if(backAxle != null) {
-                	tile.angle = backAxle.angle;
-                   tile.lastAngle = backAxle.lastAngle;
+
+                BlockPos axlePos = tile.getPos().offset(tile.getBackward());
+                TileEntity axleTile = tile.getWorld().getTileEntity(axlePos);
+                if(axleTile instanceof TileEntityAxle) {
+                    TileEntityAxle axle = (TileEntityAxle) axleTile;
+                    tile.angle = axle.angle;
+                    tile.lastAngle = axle.lastAngle;
                 }
+
                 double angle = tile.angle;
                 double lastAngle = tile.lastAngle;
                     

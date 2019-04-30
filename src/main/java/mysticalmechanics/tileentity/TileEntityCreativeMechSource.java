@@ -12,6 +12,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 
@@ -112,7 +113,11 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
 
     public boolean activate(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand,
                             EnumFacing side, float hitX, float hitY, float hitZ) {
-        wantedPowerIndex = (wantedPowerIndex+1) % wantedPower.length;
+        if(player.isSneaking())
+            wantedPowerIndex = (wantedPowerIndex+wantedPower.length-1) % wantedPower.length;
+        else
+            wantedPowerIndex = (wantedPowerIndex+1) % wantedPower.length;
+        player.sendStatusMessage(new TextComponentTranslation("mysticalmechanics.tooltip.creative_source.set",wantedPower[wantedPowerIndex]),true);
         return true;
     }
 
