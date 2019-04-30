@@ -5,6 +5,7 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
+import java.util.Map;
 import java.util.function.Function;
 
 public interface IMysticalMechanicsAPI {
@@ -56,11 +57,53 @@ public interface IMysticalMechanicsAPI {
      */
     boolean isValidGear(ItemStack stack);
 
+    /**
+     * Adds a unit for mechanical power.
+     * A unit contains helpers for converting between the unit and the internal power value and helpers for formatting text containing mechanical power information.
+     * @see IMechUnit
+     * @param unit the unit to add
+     */
     void registerUnit(IMechUnit unit);
 
+    /**
+     * Use this to get the default unit for mechanical power. Returns an IMechUnit that handles all the formatting and contains extra information.
+     * The default unit is picked as follows:
+     * - if a unit is forced in the config file and that unit exists, that unit is picked.
+     * - otherwise the unit with the highest value for IMechUnit::getPriority is picked.
+     *
+     * This method is cached and you don't need to worry about calling it multiple times.
+     *
+     * @return the default unit
+     */
     IMechUnit getDefaultUnit();
 
+    /**
+     * This method gets a specific unit by name, if it exists; otherwise it returns null.
+     *
+     * This method is not cached.
+     *
+     * @param name the name of the unit
+     * @return a specific unit, if it exists; otherwise null
+     * @see IMechUnit#getName()
+     */
     IMechUnit getUnit(String name);
 
+    /**
+     * @return an iterable containing all registered units
+     */
     Iterable<IMechUnit> getUnits();
+
+    /**
+     * @return a map containing all config values
+     */
+    Map<String,IConfigValue> getConfigValues();
+
+    /**
+     * This method gets a specific config value by its key, if it exists; otherwise it returns null.
+     * Config values allow API implementers to easily examine and set MysticalMechanics' config values.
+     *
+     * @param key the key for a config value
+     * @return a config value
+     */
+    IConfigValue getConfigValue(String key);
 }

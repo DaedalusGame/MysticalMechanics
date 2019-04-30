@@ -1,14 +1,9 @@
 package mysticalmechanics.block;
 
 
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.IProbeInfoAccessor;
-import mcjty.theoneprobe.api.ProbeMode;
 import mysticalmechanics.tileentity.TileEntityAxle;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -18,6 +13,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -84,8 +81,8 @@ public class BlockAxle extends Block {
 
     @Override
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos) {
-        TileEntityAxle p = (TileEntityAxle) world.getTileEntity(pos);
-        p.neighborChanged(fromPos);        
+        TileEntityAxle tile = (TileEntityAxle) world.getTileEntity(pos);
+        tile.neighborChanged(fromPos);
     }
 
     @Override
@@ -105,14 +102,14 @@ public class BlockAxle extends Block {
 
     @Override
     public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        TileEntityAxle p = (TileEntityAxle)world.getTileEntity(pos);
-        return p.activate(world, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        TileEntityAxle tile = (TileEntityAxle)world.getTileEntity(pos);
+        return tile.activate(world, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }
 
     @Override
     public void onBlockHarvested(World world, BlockPos pos, IBlockState state, EntityPlayer player){
-        TileEntityAxle p = (TileEntityAxle)world.getTileEntity(pos);
-        p.breakBlock(world,pos,state,player);
+        TileEntityAxle tile = (TileEntityAxle)world.getTileEntity(pos);
+        tile.breakBlock(world,pos,state,player);
     }
 
     @Override
@@ -126,6 +123,35 @@ public class BlockAxle extends Block {
                 return new AxisAlignedBB(0, 0.375, 0.375, 1.0, 0.625, 0.625);
         }
         return new AxisAlignedBB(0.375, 0, 0.375, 0.625, 1.0, 0.625);
+    }
+
+    @Override
+    public boolean rotateBlock(World world, BlockPos pos, EnumFacing side) {
+        IBlockState state = world.getBlockState(pos);
+        EnumFacing.Axis currentAxis = state.getValue(axis);
+        TileEntityAxle tile = (TileEntityAxle) world.getTileEntity(pos);
+
+        if(side.getAxis() == currentAxis) {
+            return false;
+        }
+
+        tile.rotateTile(world, pos, side);
+
+        return true;
+    }
+
+    @Override
+    public IBlockState withRotation(IBlockState state, Rotation rot) {
+        EnumFacing.Axis currentAxis = state.getValue(axis);
+        currentAxis = rot.rotate(EnumFacing.getFacingFromAxis(EnumFacing.AxisDirection.POSITIVE,currentAxis)).getAxis();
+        return state.withProperty(axis,currentAxis);
+    }
+
+    @Override
+    public IBlockState withMirror(IBlockState state, Mirror mirrorIn) {
+        EnumFacing.Axis currentAxis = state.getValue(axis);
+        currentAxis = mirrorIn.mirror(EnumFacing.getFacingFromAxis(EnumFacing.AxisDirection.POSITIVE,currentAxis)).getAxis();
+        return state.withProperty(axis,currentAxis);
     }
 
     /*@Override

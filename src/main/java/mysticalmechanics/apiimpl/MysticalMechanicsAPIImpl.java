@@ -1,6 +1,7 @@
 package mysticalmechanics.apiimpl;
 
 import mysticalmechanics.MysticalMechanics;
+import mysticalmechanics.api.IConfigValue;
 import mysticalmechanics.api.IGearBehavior;
 import mysticalmechanics.api.IMechUnit;
 import mysticalmechanics.api.IMysticalMechanicsAPI;
@@ -10,15 +11,22 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
     public static LinkedHashMap<ResourceLocation, GearStruct> GEAR_REGISTRY = new LinkedHashMap<>();
     public static LinkedHashMap<String, IMechUnit> UNITS = new LinkedHashMap<>();
+    private static HashMap<String,IConfigValue> CONFIG_VALUES = new HashMap<>();
 
     private IMechUnit unitDefault;
     private boolean unitDirty;
+
+    public void registerConfigValue(IConfigValue value) {
+        CONFIG_VALUES.put(value.getKey(),value);
+    }
 
     @Override
     public void registerGear(ResourceLocation resourceLocation, Ingredient matcher, IGearBehavior behavior) {
@@ -98,6 +106,16 @@ public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
     @Override
     public Iterable<IMechUnit> getUnits() {
         return UNITS.values();
+    }
+
+    @Override
+    public Map<String, IConfigValue> getConfigValues() {
+        return null;
+    }
+
+    @Override
+    public IConfigValue getConfigValue(String key) {
+        return null;
     }
 
     static class GearStruct {

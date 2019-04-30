@@ -68,8 +68,10 @@ public class TileEntityAxleRenderer extends TileEntitySpecialRenderer<TileEntity
                 TileEntity axleTile = tile.getWorld().getTileEntity(axlePos);
                 if(axleTile instanceof TileEntityAxle) {
                     TileEntityAxle axle = (TileEntityAxle) axleTile;
-                    tile.angle = axle.angle;
-                    tile.lastAngle = axle.lastAngle;
+                    if(axle.isValidSide(tile.getBackward())) {
+                        tile.angle = axle.angle;
+                        tile.lastAngle = axle.lastAngle;
+                    }
                 }
 
                 double angle = tile.angle;

@@ -14,10 +14,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.*;
 import net.minecraft.util.EnumFacing.AxisDirection;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
@@ -275,6 +273,11 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
 		}
 		
 	}*/
+
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
+		return oldState.getBlock() != newState.getBlock();
+	}
     
     public void neighborChanged(BlockPos from) {		
 		//if(isValidSide(from)) {
@@ -299,6 +302,16 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
     
 	public boolean isBroken() {		
 		return this.isBroken;
+	}
+
+	public void rotateTile(World world, BlockPos pos, EnumFacing side) {
+		IBlockState state = world.getBlockState(pos);
+		EnumFacing.Axis currentAxis = getAxis();
+		currentAxis = EnumFacing.getFacingFromAxis(EnumFacing.AxisDirection.POSITIVE,currentAxis).rotateAround(side.getAxis()).getAxis();
+
+		capability.setPower(0,null);
+		world.setBlockState(pos,state.withProperty(BlockAxle.axis,currentAxis));
+		updateNeighbors();
 	}
 
 	private class AxleCapability extends DefaultMechCapability {
@@ -330,7 +343,7 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
 
 		@Override
         public void setPower(double value, EnumFacing from) {
-        	if(from == null && isBroken()) {
+        	if(from == null /*&& isBroken()*/) {
         		forwardPower = 0;
         		backwardPower = 0;
     			onPowerChange();

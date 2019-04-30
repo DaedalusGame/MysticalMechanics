@@ -1,13 +1,12 @@
 package mysticalmechanics;
 
 import mysticalmechanics.api.*;
+import mysticalmechanics.apiimpl.ConfigValue;
 import mysticalmechanics.apiimpl.MysticalMechanicsAPIImpl;
 import mysticalmechanics.compat.TheOneProbe;
 import mysticalmechanics.handler.RegistryHandler;
-import mysticalmechanics.tileentity.TileEntityAxle;
-import mysticalmechanics.tileentity.TileEntityCreativeMechSource;
-import mysticalmechanics.tileentity.TileEntityGearbox;
-import mysticalmechanics.tileentity.TileEntityMergebox;
+import mysticalmechanics.handler.RightClickHandler;
+import mysticalmechanics.tileentity.*;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -30,6 +29,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreIngredient;
 
 import javax.annotation.Nullable;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 @Mod(modid = MysticalMechanics.MODID, acceptedMinecraftVersions = "[1.12, 1.13)")
 @Mod.EventBusSubscriber
@@ -46,7 +47,11 @@ public class MysticalMechanics
 
     public static Configuration config;
 
+    //UNITS
     public static String FORCE_UNIT;
+
+    //RENDER
+    public static boolean RENDER_GEAR_HOLOGRAM;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -62,10 +67,34 @@ public class MysticalMechanics
 
         proxy.preInit();
 
-        MysticalMechanicsAPI.IMPL = new MysticalMechanicsAPIImpl();
+        MysticalMechanicsAPIImpl impl = new MysticalMechanicsAPIImpl();
+        impl.registerConfigValue(new ConfigValue<String>(String.class,"units.forceUnit") {
+            @Override
+            public String getValue() {
+                return FORCE_UNIT;
+            }
+
+            @Override
+            public void setValue(String value) {
+                FORCE_UNIT = value;
+            }
+        });
+        impl.registerConfigValue(new ConfigValue<Boolean>(Boolean.class,"render.renderGearHologram") {
+            @Override
+            public Boolean getValue() {
+                return RENDER_GEAR_HOLOGRAM;
+            }
+
+            @Override
+            public void setValue(Boolean value) {
+                RENDER_GEAR_HOLOGRAM = value;
+            }
+        });
+        MysticalMechanicsAPI.IMPL = impl;
 
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new RegistryHandler());
+        MinecraftForge.EVENT_BUS.register(new RightClickHandler());
 
         CapabilityManager.INSTANCE.register(IMechCapability.class, new Capability.IStorage<IMechCapability>() {
             @Nullable
@@ -83,11 +112,14 @@ public class MysticalMechanics
 
     private void loadConfig() {
         FORCE_UNIT = config.getString("forceUnit", "units", "", "Set this to a non-empty string to force a specific unit.");
+
+        RENDER_GEAR_HOLOGRAM = config.getBoolean("renderGearHologram","render", true, "Whether gearboxes should render a hologram for inserted/extracted gears.");
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event)
     {
+        NumberFormat format = new DecimalFormat("0.##");
         MysticalMechanicsAPI.IMPL.registerUnit(new IMechUnit<Double>() {
             @Override
             public String getName() {
@@ -122,7 +154,7 @@ public class MysticalMechanics
             @Override
             @SideOnly(Side.CLIENT)
             public String format(double power) {
-                return I18n.format("mysticalmechanics.unit.default",power);
+                return I18n.format("mysticalmechanics.unit.default",format.format(power));
             }
         });
 

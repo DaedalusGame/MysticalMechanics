@@ -97,6 +97,10 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
             @Override
             public void setPower(double value, EnumFacing from) {            	
             	ItemStack gearStack = getGear(from);
+            	if(from == null) {
+                    this.power = 0;
+                    onPowerChange();
+                }
                 if (from != null && gearStack.isEmpty()) {
                 	if(capability.power != 0) {
                 		this.power = 0;
@@ -268,6 +272,11 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     }
 
     @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
+        return oldState.getBlock() != newState.getBlock();
+    }
+
+    @Override
     public int getConnections() {
         return connections;
     }
@@ -276,10 +285,11 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                             EnumFacing side, float hitX, float hitY, float hitZ) {
         ItemStack heldItem = player.getHeldItem(hand);
         EnumFacing attachSide = side;
+        if(hand == EnumHand.OFF_HAND)
+            return false;
         if(player.isSneaking())
             attachSide = attachSide.getOpposite();
-        if (!heldItem.isEmpty() && canAttachGear(attachSide,heldItem)) {
-            if (getGear(attachSide).isEmpty() && MysticalMechanicsAPI.IMPL.isValidGear(heldItem)) {
+        if (!heldItem.isEmpty() && canAttachGear(attachSide,heldItem) && getGear(attachSide).isEmpty() && MysticalMechanicsAPI.IMPL.isValidGear(heldItem)) {
                 ItemStack gear = heldItem.copy();
                 gear.setCount(1);
                 attachGear(attachSide,gear);
@@ -289,7 +299,6 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                 }
                 capability.onPowerChange();
                 return true;
-            }
         } else if (!getGear(attachSide).isEmpty()) {
             ItemStack gear = detachGear(attachSide);
             if (!world.isRemote) {
@@ -436,5 +445,24 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
 
     public double getLastAngle(EnumFacing face) {
         return lastAngles[face.getIndex()];
+    }
+
+    public void rotateTile(World world, BlockPos pos, EnumFacing side) {
+        IBlockState state = world.getBlockState(pos);
+        EnumFacing currentFacing = state.getValue(BlockGearbox.facing);
+
+        capability.setPower(0,null);
+        ItemStack[] temp = new ItemStack[gears.length];
+        for (int i = 0; i < gears.length; i++) {
+            temp[i] = gears[i];
+        }
+        for (int i = 0; i < gears.length; i++) {
+            EnumFacing facing = EnumFacing.getFront(i).rotateAround(side.getAxis());
+            gears[facing.getIndex()] = temp[i];
+        }
+        from = from.rotateAround(side.getAxis());
+        world.setBlockState(pos,state.withProperty(BlockGearbox.facing,currentFacing.rotateAround(side.getAxis())));
+        capability.onPowerChange();
+        //markDirty();
     }
 }
