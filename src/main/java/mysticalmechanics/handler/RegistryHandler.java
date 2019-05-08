@@ -25,54 +25,58 @@ import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 
+import static net.minecraftforge.fml.common.registry.GameRegistry.*;
+
 @Mod.EventBusSubscriber
 public class RegistryHandler {
-    @GameRegistry.ObjectHolder("mysticalmechanics:axle_iron")
+    @ObjectHolder("mysticalmechanics:axle_iron")
     public static BlockAxle IRON_AXLE;
-    @GameRegistry.ObjectHolder("mysticalmechanics:gearbox_frame")
+    @ObjectHolder("mysticalmechanics:gearbox_frame")
     public static BlockGearbox GEARBOX_FRAME;
-    @GameRegistry.ObjectHolder("mysticalmechanics:mergebox_frame")
+    @ObjectHolder("mysticalmechanics:mergebox_frame")
     public static BlockGearbox MERGEBOX_FRAME;
-    @GameRegistry.ObjectHolder("mysticalmechanics:creative_mech_source")
+    @ObjectHolder("mysticalmechanics:creative_mech_source")
     public static BlockCreativeMechSource CREATIVE_MECH_SOURCE;
 
-    @GameRegistry.ObjectHolder("mysticalmechanics:gear_iron")
+    @ObjectHolder("mysticalmechanics:gear_iron")
     public static Item IRON_GEAR;
-    @GameRegistry.ObjectHolder("mysticalmechanics:gear_gold")
+    @ObjectHolder("mysticalmechanics:gear_gold")
     public static Item GOLD_GEAR;
-    @GameRegistry.ObjectHolder("mysticalmechanics:gear_gold_on")
+    @ObjectHolder("mysticalmechanics:gear_gold_on")
     public static Item GOLD_GEAR_ON;
-    @GameRegistry.ObjectHolder("mysticalmechanics:gear_gold_off")
+    @ObjectHolder("mysticalmechanics:gear_gold_off")
     public static Item GOLD_GEAR_OFF;
+    @ObjectHolder("mysticalmechanics:gear_fan")
+    public static Item FAN;
 
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gear.add")
+    @ObjectHolder("mysticalmechanics:block.gear.add")
     public static SoundEvent GEAR_ADD;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gear.remove")
+    @ObjectHolder("mysticalmechanics:block.gear.remove")
     public static SoundEvent GEAR_REMOVE;
 
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.fast.lv1")
+    @ObjectHolder("mysticalmechanics:block.gearbox.fast.lv1")
     public static SoundEvent GEARBOX_FAST_LV1;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.fast.lv2")
+    @ObjectHolder("mysticalmechanics:block.gearbox.fast.lv2")
     public static SoundEvent GEARBOX_FAST_LV2;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.fast.lv3")
+    @ObjectHolder("mysticalmechanics:block.gearbox.fast.lv3")
     public static SoundEvent GEARBOX_FAST_LV3;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.mid.lv1")
+    @ObjectHolder("mysticalmechanics:block.gearbox.mid.lv1")
     public static SoundEvent GEARBOX_MID_LV1;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.mid.lv2")
+    @ObjectHolder("mysticalmechanics:block.gearbox.mid.lv2")
     public static SoundEvent GEARBOX_MID_LV2;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.mid.lv3")
+    @ObjectHolder("mysticalmechanics:block.gearbox.mid.lv3")
     public static SoundEvent GEARBOX_MID_LV3;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.slow.lv1")
+    @ObjectHolder("mysticalmechanics:block.gearbox.slow.lv1")
     public static SoundEvent GEARBOX_SLOW_LV1;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.slow.lv2")
+    @ObjectHolder("mysticalmechanics:block.gearbox.slow.lv2")
     public static SoundEvent GEARBOX_SLOW_LV2;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.slow.lv3")
+    @ObjectHolder("mysticalmechanics:block.gearbox.slow.lv3")
     public static SoundEvent GEARBOX_SLOW_LV3;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.very_slow.lv1")
+    @ObjectHolder("mysticalmechanics:block.gearbox.very_slow.lv1")
     public static SoundEvent GEARBOX_VERYSLOW_LV1;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.very_slow.lv2")
+    @ObjectHolder("mysticalmechanics:block.gearbox.very_slow.lv2")
     public static SoundEvent GEARBOX_VERYSLOW_LV2;
-    @GameRegistry.ObjectHolder("mysticalmechanics:block.gearbox.very_slow.lv3")
+    @ObjectHolder("mysticalmechanics:block.gearbox.very_slow.lv3")
     public static SoundEvent GEARBOX_VERYSLOW_LV3;
 
     @SubscribeEvent
@@ -99,6 +103,7 @@ public class RegistryHandler {
         event.getRegistry().register(GOLD_GEAR = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold").setUnlocalizedName("gear_gold").setCreativeTab(CreativeTabs.REDSTONE));
         event.getRegistry().register(GOLD_GEAR_ON = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold_on").setUnlocalizedName("gear_gold_on").setCreativeTab(CreativeTabs.REDSTONE));
         event.getRegistry().register(GOLD_GEAR_OFF = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold_off").setUnlocalizedName("gear_gold_off").setCreativeTab(CreativeTabs.REDSTONE));
+        event.getRegistry().register(FAN = new Item().setRegistryName(MysticalMechanics.MODID, "gear_fan").setUnlocalizedName("gear_fan").setCreativeTab(CreativeTabs.REDSTONE));
 
         OreDictionary.registerOre("gearIron", IRON_GEAR);
         OreDictionary.registerOre("gearGold", GOLD_GEAR);
@@ -127,6 +132,7 @@ public class RegistryHandler {
     @SubscribeEvent
     public void registerModels(ModelRegistryEvent event) {
         registerItemModel(Item.getItemFromBlock(IRON_AXLE), 0, "inventory");
+        registerItemModel(Item.getItemFromBlock(IRON_AXLE), 1, "normal");
         registerItemModel(Item.getItemFromBlock(GEARBOX_FRAME), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(MERGEBOX_FRAME), 0, "inventory");
         registerItemModel(Item.getItemFromBlock(CREATIVE_MECH_SOURCE), 0, "inventory");
@@ -135,6 +141,7 @@ public class RegistryHandler {
         registerItemModel(GOLD_GEAR, 0, "inventory");
         registerItemModel(GOLD_GEAR_OFF, 0, "inventory");
         registerItemModel(GOLD_GEAR_ON, 0, "inventory");
+        registerItemModel(FAN, 0, "inventory");
     }
 
     @SideOnly(Side.CLIENT)

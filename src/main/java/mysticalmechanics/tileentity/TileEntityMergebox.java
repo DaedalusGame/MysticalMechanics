@@ -44,6 +44,12 @@ public class TileEntityMergebox extends TileEntityGearbox {
     }
 
     @Override
+    protected void tickGear(EnumFacing facing, ItemStack gear, IGearBehavior behavior) {
+        if(behavior.canTick(gear))
+            behavior.tick(this,facing,gear,((MergeboxMechCapability)capability).getInternalPower(facing));
+    }
+
+    @Override
     public void updateNeighbors() {
         IBlockState state = world.getBlockState(getPos());
         
@@ -127,15 +133,35 @@ public class TileEntityMergebox extends TileEntityGearbox {
             }
 
             IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
-            double changedPower = 0;
 
+            double unchangedPower = getInternalPower(from);
+
+            return behavior.transformPower(TileEntityMergebox.this, from, gearStack, unchangedPower);
+        }
+
+        @Override
+        public double getVisualPower(EnumFacing from) {
+            ItemStack gearStack = getGear(from);
+            if (from != null && getGear(from).isEmpty()) {
+                return 0;
+            }
+
+            IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
+
+            double unchangedPower = getInternalPower(from);
+
+            return behavior.transformVisualPower(TileEntityMergebox.this, from, gearStack, unchangedPower);
+        }
+
+        private double getInternalPower(EnumFacing from) {
             //need to work out solution for null checks that aren't the renderer.
             if (isOutput(from) && !getGear(from).isEmpty() && getConnections() != 0) {
-                changedPower = Math.max(0, getPowerInternal());
+                return Math.max(0, getPowerInternal());
             } else if (from != null && !getGear(from).isEmpty()) {
-                changedPower = powerValues[from.getIndex()];
+                return powerValues[from.getIndex()];
+            } else {
+                return 0;
             }
-            return behavior.transformPower(TileEntityMergebox.this, from, gearStack, changedPower);
         }
 
         @Override

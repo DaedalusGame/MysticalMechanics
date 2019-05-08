@@ -7,6 +7,7 @@ item.gear_iron.name=Iron Gear
 item.gear_gold.name=Gold Gear
 item.gear_gold_on.name=Redstone Gear (Inverted)
 item.gear_gold_off.name=Redstone Gear
+item.gear_fan.name=Iron Fan
 
 subtitles.gear.add=Gear attached
 subtitles.gear.remove=Gear detached

@@ -3,10 +3,16 @@
     "defaults": {
         "model": "mysticalmechanics:axle",
         "textures": {
+            "axle": "mysticalmechanics:blocks/axle_iron",
             "particle": "mysticalmechanics:blocks/axle_iron"
         }
     },
     "variants":{
+        "normal": [{}],
+        "inventory": [{
+            "model": "mysticalmechanics:axle_iron",
+            "transform": "forge:default-item"
+        }],
         "axis": {
             "y": {},
             "z": {

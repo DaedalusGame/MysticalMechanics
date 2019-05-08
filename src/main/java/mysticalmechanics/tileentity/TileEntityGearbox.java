@@ -28,7 +28,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox, ISoundController {
@@ -68,66 +67,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     }
 
     public DefaultMechCapability createCapability() {
-        return new DefaultMechCapability() {
-            @Override
-            public void onPowerChange() {
-                TileEntityGearbox box = TileEntityGearbox.this;
-                box.updateNeighbors();
-                box.markDirty();
-            }
-
-            @Override
-            public double getPower(EnumFacing from) {
-                ItemStack gearStack = getGear(from);
-                if (from != null && gearStack.isEmpty()) {
-                    return 0;
-                }
-                IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
-                double unchangedPower = 0;
-                
-                //need to work out solution for null checks that aren't the renderer.
-                if (from == TileEntityGearbox.this.from)//|| from == null
-                    unchangedPower = capability.power;
-                else
-                    unchangedPower = power / ((double) (Math.max(1, getConnections())));
-
-                return behavior.transformPower(TileEntityGearbox.this, from, gearStack, unchangedPower);
-            }
-
-            @Override
-            public void setPower(double value, EnumFacing from) {            	
-            	ItemStack gearStack = getGear(from);
-            	if(from == null) {
-                    this.power = 0;
-                    onPowerChange();
-                }
-                if (from != null && gearStack.isEmpty()) {
-                	if(capability.power != 0) {
-                		this.power = 0;
-                		onPowerChange();
-                	}
-                }        
-                if (isInput(from) && !gearStack.isEmpty()) {
-                    IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
-                	double oldPower = capability.power;
-                	value = behavior.transformPower(TileEntityGearbox.this,from,gearStack,value);
-                    if (oldPower != value) {
-                    	capability.power = value;
-                        onPowerChange();
-                    }          
-                }               
-            }
-
-            @Override
-            public boolean isInput(EnumFacing from) {
-            	return TileEntityGearbox.this.from == from;
-            }
-
-            @Override
-            public boolean isOutput(EnumFacing from) {
-                return TileEntityGearbox.this.from != from;
-            }
-        };
+        return new GearboxMechCapability();
     }
 
     public void updateNeighbors() {
@@ -364,7 +304,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
 
     @Override
     public boolean shouldPlaySound(int id) {
-        double power = capability.getPower(null);
+        double power = capability.getVisualPower(null);
         int level = getSoundLevel();
         int speedindex = getSpeedindex(power);
         return speedindex > 0 && level > 0 && id == SOUND_IDS[speedindex - 1 + level];
@@ -383,7 +323,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
 
     @Override
     public float getCurrentPitch(int id, float pitch) {
-        double power =  capability.getPower(null);
+        double power =  capability.getVisualPower(null);
         int speedindex = getSpeedindex(power);
         if(speedindex == 1)
             return (float) (power*2 / 25.0);
@@ -425,18 +365,26 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     public void update() {
         if (world.isRemote) {
             handleSound();
-            for(EnumFacing facing : EnumFacing.VALUES) {
-                updateAngle(facing);
-                ItemStack gear = getGear(facing);
-                IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gear);
-                behavior.visualUpdate(this,facing,gear);
-            }            
         }
+        for(EnumFacing facing : EnumFacing.VALUES) {
+            ItemStack gear = getGear(facing);
+            IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gear);
+            if(world.isRemote) {
+                updateAngle(facing);
+                behavior.visualUpdate(this,facing,gear);
+            }
+            tickGear(facing, gear, behavior);
+        }
+    }
+
+    protected void tickGear(EnumFacing facing, ItemStack gear, IGearBehavior behavior) {
+        if(behavior.canTick(gear))
+            behavior.tick(this,facing,gear,((GearboxMechCapability)capability).getInternalPower(facing));
     }
 
     protected void updateAngle(EnumFacing facing) {
         lastAngles[facing.getIndex()] = angles[facing.getIndex()];
-        angles[facing.getIndex()] += capability.getPower(facing);
+        angles[facing.getIndex()] += capability.getVisualPower(facing);
     }
 
     public double getAngle(EnumFacing face) {
@@ -464,5 +412,82 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         world.setBlockState(pos,state.withProperty(BlockGearbox.facing,currentFacing.rotateAround(side.getAxis())));
         capability.onPowerChange();
         //markDirty();
+    }
+
+    private class GearboxMechCapability extends DefaultMechCapability {
+        @Override
+        public void onPowerChange() {
+            TileEntityGearbox box = TileEntityGearbox.this;
+            box.updateNeighbors();
+            box.markDirty();
+        }
+
+        @Override
+        public double getPower(EnumFacing from) {
+            ItemStack gearStack = getGear(from);
+            if (from != null && gearStack.isEmpty()) {
+                return 0;
+            }
+            IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
+
+            double unchangedPower = getInternalPower(from);
+
+            return behavior.transformPower(TileEntityGearbox.this, from, gearStack, unchangedPower);
+        }
+
+        @Override
+        public double getVisualPower(EnumFacing from) {
+            ItemStack gearStack = getGear(from);
+            if (from != null && gearStack.isEmpty()) {
+                return 0;
+            }
+            IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
+
+            double unchangedPower = getInternalPower(from);
+
+            return behavior.transformVisualPower(TileEntityGearbox.this, from, gearStack, unchangedPower);
+        }
+
+        protected double getInternalPower(EnumFacing from) {
+            //need to work out solution for null checks that aren't the renderer.
+            if (from == TileEntityGearbox.this.from)//|| from == null
+                return capability.power;
+            else
+                return power / ((double) (Math.max(1, getConnections())));
+        }
+
+        @Override
+        public void setPower(double value, EnumFacing from) {
+            ItemStack gearStack = getGear(from);
+            if(from == null) {
+                this.power = 0;
+                onPowerChange();
+            }
+            if (from != null && gearStack.isEmpty()) {
+                if(capability.power != 0) {
+                    this.power = 0;
+                    onPowerChange();
+                }
+            }
+            if (isInput(from) && !gearStack.isEmpty()) {
+                IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
+                double oldPower = capability.power;
+                value = behavior.transformPower(TileEntityGearbox.this,from,gearStack,value);
+                if (oldPower != value) {
+                    capability.power = value;
+                    onPowerChange();
+                }
+            }
+        }
+
+        @Override
+        public boolean isInput(EnumFacing from) {
+            return TileEntityGearbox.this.from == from;
+        }
+
+        @Override
+        public boolean isOutput(EnumFacing from) {
+            return TileEntityGearbox.this.from != from;
+        }
     }
 }

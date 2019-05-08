@@ -73,7 +73,7 @@ public class TheOneProbe implements Function<ITheOneProbe, Void>, IProbeInfoProv
                     IMechCapability capability = tile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, facing);
                     boolean input = capability.isInput(facing);
                     boolean output = capability.isOutput(facing);
-                    double power = capability.getPower(facing);
+                    double power = capability.getVisualPower(facing);
                     MechInfoStruct struct;
                     if (input && output)
                         struct = new MechInfoStruct(MechInfoType.Both, power, facing);

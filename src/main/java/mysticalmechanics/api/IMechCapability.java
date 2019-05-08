@@ -9,15 +9,19 @@ public interface IMechCapability {
      * Expected behavior is that this method returns 0 if the face is not an output face.
      *
      * @param from the face from which power is retrieved. Use null for internal use.
-     * @return how much power is provided from the specified face.
+     * @return how much power is provided from the specified face. Unitless. Convert using IMechUnit.
      */
     double getPower(EnumFacing from);
+
+    default double getVisualPower(EnumFacing from) {
+        return getPower(from);
+    }
 
     /**
      * Use to provide power to a block/entity from a certain face.
      * Expected behavior is that this method does nothing if the face is not an input face.
      *
-     * @param value how much power is provided. Unitless.
+     * @param value how much power is provided. Unitless. Convert using IMechUnit.
      * @param from the face from which power is provided. Use null for internal use.
      */
     void setPower(double value, EnumFacing from);

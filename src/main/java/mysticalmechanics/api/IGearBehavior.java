@@ -31,6 +31,10 @@ public interface IGearBehavior {
      */
     double transformPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power);
 
+    default double transformVisualPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
+        return transformPower(tile,facing,gear,power);
+    }
+
     /**
      * Implement this to provide special visual effects while the gear is attached to a gearbox or machine.
      *
@@ -39,4 +43,12 @@ public interface IGearBehavior {
      * @param gear the ItemStack representing the attached gear
      */
     void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear);
+
+    default boolean canTick(ItemStack gear) {
+        return false;
+    }
+
+    default void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
+        //NOOP;
+    }
 }

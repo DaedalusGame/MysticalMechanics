@@ -1,6 +1,17 @@
 {
-    "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
-    "parent": "block/block",
-    "elements": [
-    ]
+	"credit": "Made with Blockbench",
+	"elements": [
+		{
+			"from": [6.5, 0, 6.5],
+			"to": [9.5, 16, 9.5],
+			"faces": {
+				"north": {"uv": [0, 0, 3, 16], "texture": "#axle"},
+				"east": {"uv": [0, 0, 3, 16], "texture": "#axle"},
+				"south": {"uv": [0, 0, 3, 16], "texture": "#axle"},
+				"west": {"uv": [0, 0, 3, 16], "texture": "#axle"},
+				"up": {"uv": [3, 0, 6, 3], "texture": "#axle"},
+				"down": {"uv": [3, 0, 6, 3], "texture": "#axle"}
+			}
+		}
+	]
 }

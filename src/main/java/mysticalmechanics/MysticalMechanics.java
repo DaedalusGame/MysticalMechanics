@@ -7,6 +7,7 @@ import mysticalmechanics.compat.TheOneProbe;
 import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.handler.RightClickHandler;
 import mysticalmechanics.tileentity.*;
+import mysticalmechanics.util.FanBehavior;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -209,5 +210,7 @@ public class MysticalMechanics
                 //NOOP
             }
         });
+        MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_fan"), Ingredient.fromItem(RegistryHandler.FAN), new FanBehavior());
     }
+
 }
