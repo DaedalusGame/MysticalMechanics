@@ -9,6 +9,7 @@ import mysticalmechanics.handler.RightClickHandler;
 import mysticalmechanics.tileentity.*;
 import mysticalmechanics.util.FanBehavior;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTBase;
@@ -46,6 +47,8 @@ public class MysticalMechanics
     @Mod.Instance(MysticalMechanics.MODID)
     public static MysticalMechanics instance;
 
+    public static CreativeTabs creativeTab;
+
     public static Configuration config;
 
     //UNITS
@@ -57,6 +60,13 @@ public class MysticalMechanics
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
+        creativeTab = new CreativeTabs("mysticalmechanics.name") {
+            @Override
+            public ItemStack getTabIconItem() {
+                return new ItemStack(RegistryHandler.IRON_GEAR);
+            }
+        };
+
         if(config == null)
         {
             config = new Configuration(event.getSuggestedConfigurationFile());

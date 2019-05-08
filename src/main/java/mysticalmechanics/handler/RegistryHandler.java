@@ -81,10 +81,10 @@ public class RegistryHandler {
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        IRON_AXLE = (BlockAxle) new BlockAxle(Material.IRON).setRegistryName(MysticalMechanics.MODID, "axle_iron").setUnlocalizedName("axle_iron").setCreativeTab(CreativeTabs.REDSTONE).setHardness(5.0F).setResistance(10.0F);
-        GEARBOX_FRAME = (BlockGearbox) new BlockGearbox(Material.IRON).setRegistryName(MysticalMechanics.MODID, "gearbox_frame").setUnlocalizedName("gearbox_frame").setCreativeTab(CreativeTabs.REDSTONE).setHardness(5.0F).setResistance(10.0F);
-        MERGEBOX_FRAME = (BlockMergebox) new BlockMergebox(Material.IRON).setRegistryName(MysticalMechanics.MODID, "mergebox_frame").setUnlocalizedName("mergebox_frame").setCreativeTab(CreativeTabs.REDSTONE).setHardness(5.0F).setResistance(10.0F);
-        CREATIVE_MECH_SOURCE = (BlockCreativeMechSource) new BlockCreativeMechSource().setRegistryName(MysticalMechanics.MODID, "creative_mech_source").setUnlocalizedName("creative_mech_source").setCreativeTab(CreativeTabs.REDSTONE).setHardness(5.0F).setResistance(10.0F);
+        IRON_AXLE = (BlockAxle) new BlockAxle(Material.IRON).setRegistryName(MysticalMechanics.MODID, "axle_iron").setUnlocalizedName("axle_iron").setCreativeTab(MysticalMechanics.creativeTab).setHardness(5.0F).setResistance(10.0F);
+        GEARBOX_FRAME = (BlockGearbox) new BlockGearbox(Material.IRON).setRegistryName(MysticalMechanics.MODID, "gearbox_frame").setUnlocalizedName("gearbox_frame").setCreativeTab(MysticalMechanics.creativeTab).setHardness(5.0F).setResistance(10.0F);
+        MERGEBOX_FRAME = (BlockMergebox) new BlockMergebox(Material.IRON).setRegistryName(MysticalMechanics.MODID, "mergebox_frame").setUnlocalizedName("mergebox_frame").setCreativeTab(MysticalMechanics.creativeTab).setHardness(5.0F).setResistance(10.0F);
+        CREATIVE_MECH_SOURCE = (BlockCreativeMechSource) new BlockCreativeMechSource().setRegistryName(MysticalMechanics.MODID, "creative_mech_source").setUnlocalizedName("creative_mech_source").setCreativeTab(MysticalMechanics.creativeTab).setHardness(5.0F).setResistance(10.0F);
 
         event.getRegistry().register(IRON_AXLE);
         event.getRegistry().register(GEARBOX_FRAME);
@@ -99,11 +99,11 @@ public class RegistryHandler {
         event.getRegistry().register(new ItemBlock(MERGEBOX_FRAME).setRegistryName(MERGEBOX_FRAME.getRegistryName()));
         event.getRegistry().register(new ItemBlock(CREATIVE_MECH_SOURCE).setRegistryName(CREATIVE_MECH_SOURCE.getRegistryName()));
 
-        event.getRegistry().register(IRON_GEAR = new Item().setRegistryName(MysticalMechanics.MODID, "gear_iron").setUnlocalizedName("gear_iron").setCreativeTab(CreativeTabs.REDSTONE));
-        event.getRegistry().register(GOLD_GEAR = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold").setUnlocalizedName("gear_gold").setCreativeTab(CreativeTabs.REDSTONE));
-        event.getRegistry().register(GOLD_GEAR_ON = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold_on").setUnlocalizedName("gear_gold_on").setCreativeTab(CreativeTabs.REDSTONE));
-        event.getRegistry().register(GOLD_GEAR_OFF = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold_off").setUnlocalizedName("gear_gold_off").setCreativeTab(CreativeTabs.REDSTONE));
-        event.getRegistry().register(FAN = new Item().setRegistryName(MysticalMechanics.MODID, "gear_fan").setUnlocalizedName("gear_fan").setCreativeTab(CreativeTabs.REDSTONE));
+        event.getRegistry().register(IRON_GEAR = new Item().setRegistryName(MysticalMechanics.MODID, "gear_iron").setUnlocalizedName("gear_iron").setCreativeTab(MysticalMechanics.creativeTab));
+        event.getRegistry().register(GOLD_GEAR = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold").setUnlocalizedName("gear_gold").setCreativeTab(MysticalMechanics.creativeTab));
+        event.getRegistry().register(GOLD_GEAR_ON = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold_on").setUnlocalizedName("gear_gold_on").setCreativeTab(MysticalMechanics.creativeTab));
+        event.getRegistry().register(GOLD_GEAR_OFF = new Item().setRegistryName(MysticalMechanics.MODID, "gear_gold_off").setUnlocalizedName("gear_gold_off").setCreativeTab(MysticalMechanics.creativeTab));
+        event.getRegistry().register(FAN = new Item().setRegistryName(MysticalMechanics.MODID, "gear_fan").setUnlocalizedName("gear_fan").setCreativeTab(MysticalMechanics.creativeTab));
 
         OreDictionary.registerOre("gearIron", IRON_GEAR);
         OreDictionary.registerOre("gearGold", GOLD_GEAR);

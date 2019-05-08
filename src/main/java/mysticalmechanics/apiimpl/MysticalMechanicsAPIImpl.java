@@ -5,6 +5,7 @@ import mysticalmechanics.api.IConfigValue;
 import mysticalmechanics.api.IGearBehavior;
 import mysticalmechanics.api.IMechUnit;
 import mysticalmechanics.api.IMysticalMechanicsAPI;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
@@ -110,12 +111,17 @@ public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
 
     @Override
     public Map<String, IConfigValue> getConfigValues() {
-        return null;
+        return CONFIG_VALUES;
     }
 
     @Override
     public IConfigValue getConfigValue(String key) {
-        return null;
+        return CONFIG_VALUES.get(key);
+    }
+
+    @Override
+    public CreativeTabs getCreativeTab() {
+        return MysticalMechanics.creativeTab;
     }
 
     static class GearStruct {
