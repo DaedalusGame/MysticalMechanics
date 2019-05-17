@@ -42,7 +42,10 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
     }
 
     private int convertToBWM() {
-        return (int) Math.ceil(Math.log(capabilityMystMech.power*0.1+1.0) / Math.log(2));
+        if(capabilityMystMech.power >= 1)
+            return (int) Math.ceil(Math.log(capabilityMystMech.power*0.1+1.0) / Math.log(2));
+        else
+            return 0;
     }
 
     private double convertToMystMech() {
@@ -124,7 +127,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
 
     @Override
     public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
-        if (capability == MysticalMechanicsAPI.MECH_CAPABILITY && facing == getSideMystMech()) {
+        if (capability == MysticalMechanicsAPI.MECH_CAPABILITY && (facing == null || facing == getSideMystMech())) {
             return true;
         }
         if(capability == CapabilityMechanicalPower.MECHANICAL_POWER && facing == getSideBWM().getOpposite()) {
@@ -135,7 +138,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
 
     @Override
     public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
-        if (capability == MysticalMechanicsAPI.MECH_CAPABILITY && facing == getSideMystMech()) {
+        if (capability == MysticalMechanicsAPI.MECH_CAPABILITY && (facing == null || facing == getSideMystMech())) {
             return MysticalMechanicsAPI.MECH_CAPABILITY.cast(capabilityMystMech);
         }
         if(capability == CapabilityMechanicalPower.MECHANICAL_POWER && facing == getSideBWM().getOpposite()) {
