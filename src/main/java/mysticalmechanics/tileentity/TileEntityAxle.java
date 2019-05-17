@@ -2,6 +2,7 @@ package mysticalmechanics.tileentity;
 
 import mysticalmechanics.api.DefaultMechCapability;
 import mysticalmechanics.api.IAxle;
+import mysticalmechanics.api.IHasRotation;
 import mysticalmechanics.api.MysticalMechanicsAPI;
 import mysticalmechanics.block.BlockAxle;
 import mysticalmechanics.util.Misc;
@@ -17,9 +18,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
+public class TileEntityAxle extends TileEntity implements ITickable, IAxle, IHasRotation {
 	//BlockPos front;
 	//BlockPos back;
     public double angle, lastAngle;
@@ -309,6 +311,21 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle {
 		capability.setPower(0,null);
 		world.setBlockState(pos,state.withProperty(BlockAxle.axis,currentAxis));
 		updateNeighbors();
+	}
+
+	@Override
+	public boolean hasRotation(@Nonnull EnumFacing side) {
+		return isValidSide(side);
+	}
+
+	@Override
+	public double getAngle(@Nonnull EnumFacing side) {
+		return angle;
+	}
+
+	@Override
+	public double getLastAngle(@Nonnull EnumFacing side) {
+		return lastAngle;
 	}
 
 	private class AxleCapability extends DefaultMechCapability {

@@ -1,10 +1,7 @@
 package mysticalmechanics.tileentity;
 
 import mysticalmechanics.MysticalMechanics;
-import mysticalmechanics.api.DefaultMechCapability;
-import mysticalmechanics.api.IGearBehavior;
-import mysticalmechanics.api.IGearbox;
-import mysticalmechanics.api.MysticalMechanicsAPI;
+import mysticalmechanics.api.*;
 import mysticalmechanics.block.BlockGearbox;
 import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.util.ISoundController;
@@ -25,6 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -184,7 +182,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
             return;
         gears[facing.getIndex()] = stack;
         world.playSound(null,pos,RegistryHandler.GEAR_ADD,SoundCategory.BLOCKS,1.0f,1.0f);
-        markDirty();       
+        capability.onPowerChange();
     }
 
     @Override
@@ -195,7 +193,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         ItemStack gear = gears[index];
         gears[index] = ItemStack.EMPTY;
         world.playSound(null,pos,RegistryHandler.GEAR_REMOVE,SoundCategory.BLOCKS,1.0f,1.0f);
-        markDirty();
+        capability.onPowerChange();
         
         return gear;
     }
@@ -237,14 +235,12 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                 if (heldItem.isEmpty()) {
                     player.setHeldItem(hand, ItemStack.EMPTY);
                 }
-                capability.onPowerChange();
                 return true;
         } else if (!getGear(attachSide).isEmpty()) {
             ItemStack gear = detachGear(attachSide);
             if (!world.isRemote) {
                 world.spawnEntity(new EntityItem(world, player.posX, player.posY + player.height / 2.0f, player.posZ, gear));
             }
-            capability.onPowerChange();
             return true;
         }
         return false;

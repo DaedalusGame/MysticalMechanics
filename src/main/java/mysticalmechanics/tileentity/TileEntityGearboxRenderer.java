@@ -22,10 +22,12 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import java.awt.*;
 
 public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEntityGearbox> {
-    public TileEntityGearboxRenderer(){
-        super();
-    }
 	static int tick;
+
+	public TileEntityGearboxRenderer(){
+		super();
+		MinecraftForge.EVENT_BUS.register(getClass());
+	}
 
     @SubscribeEvent
 	public static void onClientTick(TickEvent.ClientTickEvent event) {

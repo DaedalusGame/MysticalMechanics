@@ -1,27 +1,20 @@
 package mysticalmechanics.tileentity;
 
+import mysticalmechanics.api.IHasRotation;
 import mysticalmechanics.block.BlockAxle;
-import mysticalmechanics.util.RenderUtil;
-import mysticalmechanics.util.StructUV;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockRendererDispatcher;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelManager;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.opengl.GL11;
 
 public class TileEntityAxleRenderer extends TileEntitySpecialRenderer<TileEntityAxle> {
     public TileEntityAxleRenderer(){
@@ -58,17 +51,7 @@ public class TileEntityAxleRenderer extends TileEntitySpecialRenderer<TileEntity
                 GlStateManager.rotate(90, 1, 0, 0);
             }
 
-
-
-            BlockPos axlePos = tile.getPos().offset(tile.getBackward());
-            TileEntity axleTile = tile.getWorld().getTileEntity(axlePos);
-            if(axleTile instanceof TileEntityAxle) {
-                TileEntityAxle axle = (TileEntityAxle) axleTile;
-                if(axle.isValidSide(tile.getBackward())) {
-                    tile.angle = axle.angle;
-                    tile.lastAngle = axle.lastAngle;
-                }
-            }
+            syncAngle(tile, tile.getBackward());
 
             double angle = tile.angle;
             double lastAngle = tile.lastAngle;
@@ -82,5 +65,17 @@ public class TileEntityAxleRenderer extends TileEntitySpecialRenderer<TileEntity
             GlStateManager.popMatrix();
         }
 
+    }
+
+    private void syncAngle(TileEntityAxle tile, EnumFacing checkDirection) {
+        BlockPos axlePos = tile.getPos().offset(checkDirection);
+        TileEntity axleTile = tile.getWorld().getTileEntity(axlePos);
+        if(axleTile instanceof IHasRotation) {
+            IHasRotation axle = (IHasRotation) axleTile;
+            if(axle.hasRotation(checkDirection)) {
+                tile.angle = axle.getAngle(checkDirection);
+                tile.lastAngle = axle.getLastAngle(checkDirection);
+            }
+        }
     }
 }

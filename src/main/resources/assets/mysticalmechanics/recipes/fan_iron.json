@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "mysticalmechanics:gear_fan",
+    "data": 0,
+    "count": 1
+  },
+  "pattern": [
+    "C C",
+    " S ",
+    "C C"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "S": {
+      "type": "forge:ore_dict",
+      "ore": "nuggetIron"
+    },
+    "C": {
+      "item": "minecraft:heavy_weighted_pressure_plate",
+      "data": 0
+    }
+  }
+}
