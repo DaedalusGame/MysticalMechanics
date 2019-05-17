@@ -15,10 +15,6 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 public class ClientProxy implements IProxy {
     @Override
     public void preInit() {
-        MinecraftForge.EVENT_BUS.register(TileEntityGearboxRenderer.class);
-
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAxle.class, new TileEntityAxleRenderer());
-        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGearbox.class, new TileEntityGearboxRenderer());
     }
 
     @Override

@@ -1,0 +1,24 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "mysticalmechanics:converter_bwm",
+    "textures": {
+      "outside": "minecraft:blocks/planks_oak",
+      "inside": "minecraft:blocks/planks_spruce",
+      "particle": "minecraft:blocks/planks_oak"
+    },
+    "transform": "forge:default-block"
+  },
+  "variants":{
+    "normal":[{}],
+    "inventory":[{}],
+    "facing": {
+      "down":  { "x": 180 },
+      "up":    { },
+      "north": { "x": 90 },
+      "south": { "x": 90, "y": 180 },
+      "west":  { "x": 90, "y": 270 },
+      "east":  { "x": 90, "y": 90 }
+    }
+  }
+}

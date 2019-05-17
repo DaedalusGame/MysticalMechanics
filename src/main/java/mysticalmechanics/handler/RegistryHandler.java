@@ -1,10 +1,8 @@
 package mysticalmechanics.handler;
 
 import mysticalmechanics.MysticalMechanics;
-import mysticalmechanics.block.BlockAxle;
-import mysticalmechanics.block.BlockCreativeMechSource;
-import mysticalmechanics.block.BlockGearbox;
-import mysticalmechanics.block.BlockMergebox;
+import mysticalmechanics.block.*;
+import mysticalmechanics.tileentity.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -16,6 +14,7 @@ import net.minecraft.util.SoundEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
@@ -90,6 +89,11 @@ public class RegistryHandler {
         event.getRegistry().register(GEARBOX_FRAME);
         event.getRegistry().register(MERGEBOX_FRAME);
         event.getRegistry().register(CREATIVE_MECH_SOURCE);
+
+        GameRegistry.registerTileEntity(TileEntityAxle.class,new ResourceLocation(MysticalMechanics.MODID,"axle"));
+        GameRegistry.registerTileEntity(TileEntityGearbox.class,new ResourceLocation(MysticalMechanics.MODID,"gearbox"));
+        GameRegistry.registerTileEntity(TileEntityMergebox.class,new ResourceLocation(MysticalMechanics.MODID,"mergebox"));
+        GameRegistry.registerTileEntity(TileEntityCreativeMechSource.class,new ResourceLocation(MysticalMechanics.MODID,"creative_mech_source"));
     }
 
     @SubscribeEvent
@@ -142,6 +146,9 @@ public class RegistryHandler {
         registerItemModel(GOLD_GEAR_OFF, 0, "inventory");
         registerItemModel(GOLD_GEAR_ON, 0, "inventory");
         registerItemModel(FAN, 0, "inventory");
+
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityAxle.class, new TileEntityAxleRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityGearbox.class, new TileEntityGearboxRenderer());
     }
 
     @SideOnly(Side.CLIENT)

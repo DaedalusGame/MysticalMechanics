@@ -15,7 +15,7 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 
-version = "0.6"
+version = "0.7"
 group= "mysticalmechanics" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Mystical Mechanics"
 
@@ -23,7 +23,7 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 minecraft {
-    version = "1.12.2-14.23.3.2655"
+    version = "1.12.2-14.23.4.2705"
     runDir = "run"
     mappings = "snapshot_20171125"
     replace "%VERSION%": "${project.version}"

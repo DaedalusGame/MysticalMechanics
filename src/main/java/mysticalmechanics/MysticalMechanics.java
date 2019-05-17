@@ -3,6 +3,7 @@ package mysticalmechanics;
 import mysticalmechanics.api.*;
 import mysticalmechanics.apiimpl.ConfigValue;
 import mysticalmechanics.apiimpl.MysticalMechanicsAPIImpl;
+import mysticalmechanics.compat.BetterWithMods;
 import mysticalmechanics.compat.TheOneProbe;
 import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.handler.RightClickHandler;
@@ -107,6 +108,10 @@ public class MysticalMechanics
         MinecraftForge.EVENT_BUS.register(new RegistryHandler());
         MinecraftForge.EVENT_BUS.register(new RightClickHandler());
 
+        if(Loader.isModLoaded("betterwithmods")) {
+            MinecraftForge.EVENT_BUS.register(new BetterWithMods());
+        }
+
         CapabilityManager.INSTANCE.register(IMechCapability.class, new Capability.IStorage<IMechCapability>() {
             @Nullable
             @Override
@@ -168,11 +173,6 @@ public class MysticalMechanics
                 return I18n.format("mysticalmechanics.unit.default",format.format(power));
             }
         });
-
-        GameRegistry.registerTileEntity(TileEntityAxle.class,"mysticalmechanics:axle");
-        GameRegistry.registerTileEntity(TileEntityGearbox.class,"mysticalmechanics:gearbox");
-        GameRegistry.registerTileEntity(TileEntityMergebox.class,"mysticalmechanics:mergebox");
-        GameRegistry.registerTileEntity(TileEntityCreativeMechSource.class,"mysticalmechanics:creative_mech_source");
 
         MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_iron"), new OreIngredient("gearIron"), new IGearBehavior() {
             @Override
