@@ -58,6 +58,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     public static final int[] SOUND_IDS = new int[]{SOUND_SLOW_LV1,SOUND_SLOW_LV2,SOUND_SLOW_LV3,SOUND_MID_LV1,SOUND_MID_LV2,SOUND_MID_LV3,SOUND_FAST_LV1,SOUND_FAST_LV2,SOUND_FAST_LV3};
 
     HashMap<Integer,Integer> soundsPlaying = new HashMap<>();
+    public boolean shouldUpdate;
 
     public TileEntityGearbox() {
         super();
@@ -362,6 +363,10 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         if (world.isRemote) {
             handleSound();
         }
+        if(shouldUpdate) {
+            updateNeighbors();
+            shouldUpdate = false;
+        }
         for(EnumFacing facing : EnumFacing.VALUES) {
             ItemStack gear = getGear(facing);
             IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gear);
@@ -414,7 +419,8 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         @Override
         public void onPowerChange() {
             TileEntityGearbox box = TileEntityGearbox.this;
-            box.updateNeighbors();
+            box.shouldUpdate = true;
+            //box.updateNeighbors();
             box.markDirty();
         }
 

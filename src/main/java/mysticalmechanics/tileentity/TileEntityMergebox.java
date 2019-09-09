@@ -121,7 +121,7 @@ public class TileEntityMergebox extends TileEntityGearbox {
         @Override
         public void onPowerChange() {
             TileEntityGearbox box = TileEntityMergebox.this;
-            box.updateNeighbors();
+            box.shouldUpdate = true;
             box.markDirty();
         }
 

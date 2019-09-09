@@ -1,0 +1,24 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "betterwithmods"
+    }
+  ],
+  "result": {
+    "item": "mysticalmechanics:converter_bwm",
+    "data": 0,
+    "count": 1
+  },
+  "type": "forge:ore_shapeless",
+  "ingredients": [
+    {
+      "item": "betterwithmods:wooden_gearbox",
+      "data": 0
+    },
+    {
+      "item": "mysticalmechanics:gearbox_frame",
+      "data": 0
+    }
+  ]
+}

@@ -3,6 +3,7 @@ package mysticalmechanics.block;
 import mysticalmechanics.tileentity.TileEntityConverterBWM;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -19,6 +20,7 @@ import javax.annotation.Nullable;
 
 public class BlockConverterBWM extends Block {
     public static final PropertyDirection facing = PropertyDirection.create("facing");
+    public static final PropertyBool on = PropertyBool.create("on");
 
     public BlockConverterBWM(Material material) {
         super(material);
@@ -26,17 +28,17 @@ public class BlockConverterBWM extends Block {
 
     @Override
     public BlockStateContainer createBlockState(){
-        return new BlockStateContainer(this, facing);
+        return new BlockStateContainer(this, facing, on);
     }
 
     @Override
     public int getMetaFromState(IBlockState state){
-        return state.getValue(facing).getIndex();
+        return state.getValue(facing).getIndex() + (state.getValue(on) ? (1 << 3) : 0);
     }
 
     @Override
     public IBlockState getStateFromMeta(int meta){
-        return getDefaultState().withProperty(facing, EnumFacing.getFront(meta));
+        return getDefaultState().withProperty(facing, EnumFacing.getFront(meta)).withProperty(on, (meta >> 3) > 0);
     }
 
     @Override

@@ -19,6 +19,18 @@
       "south": { "x": 90, "y": 180 },
       "west":  { "x": 90, "y": 270 },
       "east":  { "x": 90, "y": 90 }
+    },
+    "on": {
+      "true": {
+        "textures": {
+          "gearbox": "mysticalmechanics:blocks/gearbox_input"
+        }
+      },
+      "false": {
+        "textures": {
+          "gearbox": "mysticalmechanics:blocks/gearbox_output"
+        }
+      }
     }
   }
 }

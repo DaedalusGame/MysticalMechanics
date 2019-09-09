@@ -130,6 +130,9 @@ public class MysticalMechanics
         FORCE_UNIT = config.getString("forceUnit", "units", "", "Set this to a non-empty string to force a specific unit.");
 
         RENDER_GEAR_HOLOGRAM = config.getBoolean("renderGearHologram","render", true, "Whether gearboxes should render a hologram for inserted/extracted gears.");
+
+        if(config.hasChanged())
+            config.save();
     }
 
     @Mod.EventHandler

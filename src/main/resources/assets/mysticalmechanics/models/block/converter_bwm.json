@@ -2,8 +2,7 @@
 	"credit": "Made with Blockbench",
 	"textures": {
 		"0": "mysticalmechanics:blocks/frame_side",
-		"1": "mysticalmechanics:blocks/frame_top",
-		"4": "mysticalmechanics:blocks/gearbox_input"
+		"1": "mysticalmechanics:blocks/frame_top"
 	},
 	"elements": [
 		{
@@ -26,7 +25,7 @@
 				"east": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"south": {"uv": [0, 0, 16, 16], "texture": "#0"},
 				"west": {"uv": [0, 0, 16, 16], "texture": "#0"},
-				"down": {"uv": [0, 0, 16, 16], "texture": "#4"}
+				"down": {"uv": [0, 0, 16, 16], "texture": "#gearbox"}
 			}
 		},
 		{

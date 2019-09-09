@@ -21,6 +21,7 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 
@@ -41,15 +42,34 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
         capabilityMystMech = new ConverterMystMechCapability();
     }
 
+    public boolean canConvertToBWM() {
+        IBlockState state = world.getBlockState(pos);
+        if(state.getBlock() instanceof BlockConverterBWM)
+            return !state.getValue(BlockConverterBWM.on);
+        else
+            return false;
+    }
+
+    public boolean canConvertToMM() {
+        IBlockState state = world.getBlockState(pos);
+        if(state.getBlock() instanceof BlockConverterBWM)
+            return state.getValue(BlockConverterBWM.on);
+        else
+            return false;
+    }
+
     private int convertToBWM() {
-        if(capabilityMystMech.power >= 1)
+        if(canConvertToBWM() && capabilityMystMech.power >= 1)
             return (int) Math.ceil(Math.log(capabilityMystMech.power*0.1+1.0) / Math.log(2));
         else
             return 0;
     }
 
     private double convertToMystMech() {
-        return (Math.pow(2,capabilityBWM.power)-1);
+        if(canConvertToMM())
+            return (Math.pow(2,capabilityBWM.power)-1);
+        else
+            return 0;
     }
 
     public EnumFacing getSideBWM() {
@@ -183,6 +203,15 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
         EnumFacing attachSide = side;
         if(hand == EnumHand.OFF_HAND)
             return false;
+        if(side == getSideBWM()) {
+            boolean newOn = !state.getValue(BlockConverterBWM.on);
+            if(newOn)
+                player.sendStatusMessage(new TextComponentTranslation("mysticalmechanics.tooltip.bwm_converter.on"),true);
+            else
+                player.sendStatusMessage(new TextComponentTranslation("mysticalmechanics.tooltip.bwm_converter.off"),true);
+            world.setBlockState(pos,state.withProperty(BlockConverterBWM.on,newOn));
+            return true;
+        }
         if(player.isSneaking())
             attachSide = attachSide.getOpposite();
         if (!heldItem.isEmpty() && canAttachGear(attachSide,heldItem) && getGear(attachSide).isEmpty() && MysticalMechanicsAPI.IMPL.isValidGear(heldItem)) {
