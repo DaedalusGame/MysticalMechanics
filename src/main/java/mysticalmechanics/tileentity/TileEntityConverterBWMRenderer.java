@@ -7,6 +7,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -112,37 +113,13 @@ public class TileEntityConverterBWMRenderer extends TileEntitySpecialRenderer<Ti
                 GlStateManager.scale(0.875, 0.875, 0.875);
                 GlStateManager.rotate(
                         ((float) (partialTicks * angle) + (1 - partialTicks) * (float) lastAngle), 0, 0, 1);
-                GlStateManager.color(0.5f, 0.5f, 0.5f, 0.5f);
-                IBakedModel model = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(gear, tile.getWorld(), null);
-                Minecraft.getMinecraft().renderEngine.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-                renderItem(gear, model);
+                Minecraft.getMinecraft().getRenderItem().renderItem(gear,
+                        ItemCameraTransforms.TransformType.FIXED);
                 GlStateManager.popMatrix();
                 GlStateManager.disableBlend();
 
             }
         }
 
-    }
-
-    public void renderItem(ItemStack stack, IBakedModel model) {
-        float r = 1f;
-        float g = 1f;
-        float b = 1f;
-        float a = 0.5f;
-        if (!stack.isEmpty()) {
-            GlStateManager.pushMatrix();
-            GlStateManager.translate(-0.5F, -0.5F, -0.5F);
-
-            if (model.isBuiltInRenderer()) {
-                GlStateManager.color(r, g, b, a);
-                GlStateManager.enableRescaleNormal();
-                stack.getItem().getTileEntityItemStackRenderer().renderByItem(stack);
-            } else {
-                Color color = new Color(r, g, b, a);
-                Minecraft.getMinecraft().getRenderItem().renderModel(model, color.getRGB(), stack);
-            }
-
-            GlStateManager.popMatrix();
-        }
     }
 }
