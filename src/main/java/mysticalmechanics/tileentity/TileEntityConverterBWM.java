@@ -150,7 +150,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
         if (capability == MysticalMechanicsAPI.MECH_CAPABILITY && (facing == null || facing == getSideMystMech())) {
             return true;
         }
-        if(capability == CapabilityMechanicalPower.MECHANICAL_POWER && facing == getSideBWM().getOpposite()) {
+        if(capability == CapabilityMechanicalPower.MECHANICAL_POWER && facing == getSideBWM()) {
             return true;
         }
         return super.hasCapability(capability, facing);
@@ -161,7 +161,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
         if (capability == MysticalMechanicsAPI.MECH_CAPABILITY && (facing == null || facing == getSideMystMech())) {
             return MysticalMechanicsAPI.MECH_CAPABILITY.cast(capabilityMystMech);
         }
-        if(capability == CapabilityMechanicalPower.MECHANICAL_POWER && facing == getSideBWM().getOpposite()) {
+        if(capability == CapabilityMechanicalPower.MECHANICAL_POWER && facing == getSideBWM()) {
             return CapabilityMechanicalPower.MECHANICAL_POWER.cast(capabilityBWM);
         }
         return super.getCapability(capability, facing);
@@ -178,13 +178,13 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
 
         if (tile != null && tile.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite())) {
             IMechCapability neighbor = tile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite());
-            /*if (capabilityMystMech.isInput(from)) {
+            if (capabilityMystMech.isInput(from)) {
                 if (neighbor.isOutput(from.getOpposite()) && !getGear(from).isEmpty()) {
                     capabilityMystMech.setPower(neighbor.getPower(from.getOpposite()), from);
                 } else if (getGear(from).isEmpty()) {
                     capabilityMystMech.setPower(0, from);
                 }
-            }*/
+            }
             if (capabilityMystMech.isOutput(from)) {
                 if (!getGear(from).isEmpty()) {
                     neighbor.setPower(capabilityMystMech.getPower(from), from.getOpposite());
@@ -210,6 +210,9 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
             else
                 player.sendStatusMessage(new TextComponentTranslation("mysticalmechanics.tooltip.bwm_converter.off"),true);
             world.setBlockState(pos,state.withProperty(BlockConverterBWM.on,newOn));
+            capabilityBWM.power = 0;
+            capabilityMystMech.power = 0;
+            capabilityMystMech.onPowerChange();
             return true;
         }
         if(player.isSneaking())
@@ -409,12 +412,12 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
 
         @Override
         public boolean isInput(EnumFacing from) {
-            return from == getSideMystMech();
+            return from == getSideMystMech() && canConvertToBWM();
         }
 
         @Override
         public boolean isOutput(EnumFacing from) {
-            return from == getSideMystMech();
+            return from == getSideMystMech() && canConvertToMM();
         }
     }
 }
