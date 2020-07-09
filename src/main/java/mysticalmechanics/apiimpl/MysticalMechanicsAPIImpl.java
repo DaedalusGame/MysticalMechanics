@@ -1,13 +1,12 @@
 package mysticalmechanics.apiimpl;
 
 import mysticalmechanics.MysticalMechanics;
-import mysticalmechanics.api.IConfigValue;
-import mysticalmechanics.api.IGearBehavior;
-import mysticalmechanics.api.IMechUnit;
-import mysticalmechanics.api.IMysticalMechanicsAPI;
+import mysticalmechanics.api.*;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
@@ -122,6 +121,36 @@ public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
     @Override
     public CreativeTabs getCreativeTab() {
         return MysticalMechanics.creativeTab;
+    }
+
+    @Override
+    public void pushPower(TileEntity tileSelf, EnumFacing sideSelf, IMechCapability capSelf, boolean hasGear) {
+        TileEntity tileOther = tileSelf.getWorld().getTileEntity(tileSelf.getPos().offset(sideSelf));
+        EnumFacing sideOther = sideSelf.getOpposite();
+        if(tileOther != null) {
+            IMechCapability capOther = tileOther.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, sideOther);
+            if(capOther != null && !capSelf.isInput(sideSelf)) {
+                if(hasGear)
+                    capOther.setPower(capSelf.getPower(sideSelf), sideOther);
+                else
+                    capOther.setPower(0, sideOther);
+            }
+        }
+    }
+
+    @Override
+    public void pullPower(TileEntity tileSelf, EnumFacing sideSelf, IMechCapability capSelf, boolean hasGear) {
+        TileEntity tileOther = tileSelf.getWorld().getTileEntity(tileSelf.getPos().offset(sideSelf));
+        EnumFacing sideOther = sideSelf.getOpposite();
+        if(tileOther != null) {
+            IMechCapability capOther = tileOther.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, sideOther);
+            if (capOther != null && !capSelf.isOutput(sideSelf)) {
+                if (hasGear && capOther.isOutput(sideOther))
+                    capSelf.setPower(capOther.getPower(sideOther), sideSelf);
+                else
+                    capSelf.setPower(0, sideSelf);
+            }
+        }
     }
 
     static class GearStruct {

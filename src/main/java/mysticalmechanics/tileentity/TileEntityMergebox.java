@@ -55,14 +55,7 @@ public class TileEntityMergebox extends TileEntityGearbox {
         
         //manages Mergeboxes input;
         for (EnumFacing f : EnumFacing.VALUES) {
-            TileEntity t = world.getTileEntity(getPos().offset(f));
-            if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()) && capability.isInput(f)) {
-                if (t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).isOutput(f.getOpposite()) && !getGear(f).isEmpty()) {
-                    capability.setPower(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).getPower(f.getOpposite()), f);
-                } else if (getGear(f).isEmpty() && capability.isInput(f)) {
-                    capability.setPower(0, f);
-                }
-            }
+            MysticalMechanicsAPI.IMPL.pullPower(this, f, capability, !getGear(f).isEmpty());
         }
         
         connections = 0;
@@ -84,17 +77,8 @@ public class TileEntityMergebox extends TileEntityGearbox {
         
         //manages Mergeboxes output
         if (state.getBlock() instanceof BlockGearbox) {
-            from = state.getValue(BlockGearbox.facing);            
-            TileEntity t = world.getTileEntity(getPos().offset(from));
-
-            if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite())) {
-                IMechCapability capability = t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite());
-                if(capability.isInput(from.getOpposite()) && !getGear(from).isEmpty()) {
-            		capability.setPower(this.capability.getPower(from), from.getOpposite());
-            	}else if(capability.isInput(from.getOpposite())) {
-            		capability.setPower(0, from.getOpposite());
-            	}
-            }
+            from = state.getValue(BlockGearbox.facing);
+            MysticalMechanicsAPI.IMPL.pushPower(this, from, capability, !getGear(from).isEmpty());
         }        
         markDirty();
     }

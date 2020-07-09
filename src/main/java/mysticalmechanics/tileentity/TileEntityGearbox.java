@@ -75,14 +75,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         //sets Gearbox Input.
         if (state.getBlock() instanceof BlockGearbox) {
             from = state.getValue(BlockGearbox.facing);
-            TileEntity t = world.getTileEntity(getPos().offset(from));
-            if (t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()) && capability.isInput(from)) {
-            	if(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()).isOutput(from.getOpposite())&& !getGear(from).isEmpty()) {
-            		capability.setPower(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite()).getPower(from.getOpposite()), from);
-            	}else if(getGear(from).isEmpty()&&capability.isInput(from)) {
-            		capability.setPower(0, from);
-            	 }
-            }               
+            MysticalMechanicsAPI.IMPL.pullPower(this, from, capability, !getGear(from).isEmpty());
         }
         
         connections = 0;
@@ -95,23 +88,15 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                     	connections++;
                     }
                     toUpdate.add(f);
-                    
-                    
+
+
                 }
             }                  
         }
         
         //Manages Power Output.
         for (EnumFacing f : toUpdate) {
-            BlockPos p = getPos().offset(f);
-            TileEntity t = world.getTileEntity(p);            
-            if(t != null && t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()) && capability.isOutput(f)) {
-            	if(!getGear(f).isEmpty()) {            		
-            		t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(capability.getPower(f), f.getOpposite());
-            	}else if (getGear(f).isEmpty()) {
-            		t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(0, f.getOpposite());
-            	}
-            }            	
+            MysticalMechanicsAPI.IMPL.pushPower(this, f, capability, !getGear(f).isEmpty());
         }
         markDirty();
     }

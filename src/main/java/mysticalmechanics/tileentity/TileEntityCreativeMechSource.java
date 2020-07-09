@@ -128,14 +128,7 @@ public class TileEntityCreativeMechSource extends TileEntity implements ITickabl
 
     public void updateNeighbors(){
         for (EnumFacing f : EnumFacing.values()){
-            TileEntity t = world.getTileEntity(getPos().offset(f));
-            if (t != null){
-                if (t.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite())){
-                	if(t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).isInput(f.getOpposite())) {
-                		t.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, f.getOpposite()).setPower(capability.getPower(f.getOpposite()),f.getOpposite());
-                	}	
-                }
-            }
+            MysticalMechanicsAPI.IMPL.pushPower(this, f, capability, true);
         }
     }
 

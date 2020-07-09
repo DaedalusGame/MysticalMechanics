@@ -2,6 +2,7 @@ package mysticalmechanics.tileentity;
 
 import betterwithmods.api.BWMAPI;
 import betterwithmods.api.capabilities.CapabilityMechanicalPower;
+import mysticalmechanics.MysticalMechanics;
 import mysticalmechanics.api.*;
 import mysticalmechanics.block.BlockConverterBWM;
 import mysticalmechanics.handler.RegistryHandler;
@@ -174,25 +175,11 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
 
     public void updateNeighbors() {
         EnumFacing from = getSideMystMech();
-        TileEntity tile = world.getTileEntity(getPos().offset(from));
 
-        if (tile != null && tile.hasCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite())) {
-            IMechCapability neighbor = tile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, from.getOpposite());
-            if (capabilityMystMech.isInput(from)) {
-                if (neighbor.isOutput(from.getOpposite()) && !getGear(from).isEmpty()) {
-                    capabilityMystMech.setPower(neighbor.getPower(from.getOpposite()), from);
-                } else if (getGear(from).isEmpty()) {
-                    capabilityMystMech.setPower(0, from);
-                }
-            }
-            if (capabilityMystMech.isOutput(from)) {
-                if (!getGear(from).isEmpty()) {
-                    neighbor.setPower(capabilityMystMech.getPower(from), from.getOpposite());
-                } else if (getGear(from).isEmpty()) {
-                    neighbor.setPower(0, from.getOpposite());
-                }
-            }
-        }
+        if(capabilityMystMech.isInput(from))
+            MysticalMechanicsAPI.IMPL.pullPower(this, from, capabilityMystMech, !getGear(from).isEmpty());
+        if(capabilityMystMech.isOutput(from))
+            MysticalMechanicsAPI.IMPL.pushPower(this, from, capabilityMystMech, !getGear(from).isEmpty());
 
         markDirty();
     }
@@ -204,15 +191,15 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
         if(hand == EnumHand.OFF_HAND)
             return false;
         if(side == getSideBWM()) {
+            capabilityBWM.power = 0;
+            capabilityMystMech.power = 0;
+            capabilityMystMech.onPowerChange();
             boolean newOn = !state.getValue(BlockConverterBWM.on);
             if(newOn)
                 player.sendStatusMessage(new TextComponentTranslation("mysticalmechanics.tooltip.bwm_converter.on"),true);
             else
                 player.sendStatusMessage(new TextComponentTranslation("mysticalmechanics.tooltip.bwm_converter.off"),true);
             world.setBlockState(pos,state.withProperty(BlockConverterBWM.on,newOn));
-            capabilityBWM.power = 0;
-            capabilityMystMech.power = 0;
-            capabilityMystMech.onPowerChange();
             return true;
         }
         if(player.isSneaking())
@@ -363,7 +350,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
 
         private double getInternalPower(EnumFacing from) {
             if (from == getSideMystMech())
-                return Math.max(convertToMystMech(),power);
+                return canConvertToMM() ? convertToMystMech() : power;
             else
                 return 0;
         }
