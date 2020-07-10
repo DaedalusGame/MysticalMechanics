@@ -34,7 +34,7 @@ public class RightClickHandler {
         }
     }
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public void onApplyLube(PlayerInteractEvent.RightClickBlock event) {
         World world = event.getWorld();
         BlockPos pos = event.getPos();
@@ -47,5 +47,5 @@ public class RightClickHandler {
                 event.setCancellationResult(EnumActionResult.SUCCESS);
             }
         }
-    }
+    }*/
 }

@@ -60,8 +60,6 @@ public class MysticalMechanics
     //RENDER
     public static boolean RENDER_GEAR_HOLOGRAM;
 
-    public static SimpleLubricant TEST_LUBRICANT;
-
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
@@ -240,9 +238,5 @@ public class MysticalMechanics
             }
         });
         MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_fan"), Ingredient.fromItem(RegistryHandler.FAN), new FanBehavior());
-
-        TEST_LUBRICANT = new SimpleLubricant(new ResourceLocation(MODID, "test_lubricant"), new Color(128, 255, 128)).setParameter("speed", 10.0);
-        MysticalMechanicsAPI.IMPL.registerSimpleLubricant(TEST_LUBRICANT);
     }
-
 }
