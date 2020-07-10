@@ -30,23 +30,8 @@ public class TileEntityMergebox extends TileEntityGearbox {
     }
 
     @Override
-    protected void updateAngle(EnumFacing facing) {
-        super.updateAngle(facing);
-        /*ouble value = 0;
-        if(capability.isOutput(facing)) {
-            value = capability.getPower(facing);
-        } else {
-            value = ((MergeboxMechCapability)capability).powerValues[facing.getIndex()];
-        }
-
-        lastAngles[facing.getIndex()] = angles[facing.getIndex()];
-        angles[facing.getIndex()] += value;*/
-    }
-
-    @Override
-    protected void tickGear(EnumFacing facing, ItemStack gear, IGearBehavior behavior) {
-        if(behavior.canTick(gear))
-            behavior.tick(this,facing,gear,((MergeboxMechCapability)capability).getInternalPower(facing));
+    protected double getInternalPower(EnumFacing facing) {
+        return ((MergeboxMechCapability)capability).getInternalPower(facing);
     }
 
     @Override

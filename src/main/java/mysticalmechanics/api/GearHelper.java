@@ -1,11 +1,20 @@
 package mysticalmechanics.api;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+
+import javax.annotation.Nullable;
 
 public class GearHelper {
     ItemStack gear = ItemStack.EMPTY;
     IGearData data;
+
+    public void setGear(ItemStack stack) {
+        gear = stack;
+        data = null;
+        createData();
+    }
 
     public ItemStack getGear() {
         return gear;
@@ -15,6 +24,7 @@ public class GearHelper {
         return data;
     }
 
+    @Nullable
     public IGearBehavior getBehavior() {
         return MysticalMechanicsAPI.IMPL.getGearBehavior(gear);
     }
@@ -29,12 +39,12 @@ public class GearHelper {
             data = behavior.createData();
     }
 
-    public void attach(ItemStack stack) {
+    public void attach(@Nullable EntityPlayer player, ItemStack stack) {
         gear = stack;
         createData();
     }
 
-    public ItemStack detach() {
+    public ItemStack detach(@Nullable EntityPlayer player) {
         ItemStack removed = gear;
         gear = ItemStack.EMPTY;
         data = null;
@@ -51,17 +61,16 @@ public class GearHelper {
 
     public void readFromNBT(NBTTagCompound tag) {
         gear = new ItemStack(tag.getCompoundTag("gear"));
+        data = null;
         createData();
         if(data != null)
             data.readFromNBT(tag.getCompoundTag("data"));
     }
 
-    public void writeToNBT(NBTTagCompound tag) {
+    public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         tag.setTag("gear", gear.serializeNBT());
-        if(data != null) {
-            NBTTagCompound dataTag = new NBTTagCompound();
-            data.writeToNBT(dataTag);
-            tag.setTag("data", dataTag);
-        }
+        if(data != null)
+            tag.setTag("data", data.writeToNBT(new NBTTagCompound()));
+        return tag;
     }
 }

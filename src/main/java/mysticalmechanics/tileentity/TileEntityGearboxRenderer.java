@@ -1,6 +1,7 @@
 package mysticalmechanics.tileentity;
 
 import mysticalmechanics.MysticalMechanics;
+import mysticalmechanics.api.GearHelper;
 import mysticalmechanics.api.MysticalMechanicsAPI;
 import mysticalmechanics.block.BlockGearbox;
 import net.minecraft.block.state.IBlockState;
@@ -46,7 +47,7 @@ public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEnt
             IBlockState state = tile.getWorld().getBlockState(tile.getPos());
             if (state.getBlock() instanceof BlockGearbox){
 				int face = 0;
-				for (ItemStack gear:tile.gears) {
+				for (GearHelper gear : tile.gears) {
 					EnumFacing direction = EnumFacing.VALUES[face];
 					boolean hitSide = false;
 					if(correctHit) {
@@ -96,7 +97,9 @@ public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEnt
 		                double lastAngle = tile.getLastAngle(direction);
 
 		                double totalTick = tick + partialTicks;
-						
+
+		                ItemStack gearStack = gear.getGear();
+
 						//render hologram
 						double offset = -0.375;
 						if (hitSide && MysticalMechanics.RENDER_GEAR_HOLOGRAM) {
@@ -105,7 +108,7 @@ public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEnt
 							if (gear.isEmpty()) {
 								startOffset = -0.5;
 								endOffset = offset;
-								gear = heldItem;
+								gearStack = heldItem;
 							} else {
 								startOffset = offset;
 								endOffset = -0.5;
@@ -118,7 +121,7 @@ public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEnt
 						GlStateManager.scale(0.875, 0.875, 0.875);
 						GlStateManager.rotate(
 								((float) (partialTicks * angle) + (1 - partialTicks) * (float) lastAngle), 0, 0, 1);
-						Minecraft.getMinecraft().getRenderItem().renderItem(gear,
+						Minecraft.getMinecraft().getRenderItem().renderItem(gearStack,
 								ItemCameraTransforms.TransformType.FIXED);
 						GlStateManager.popMatrix();
 						GlStateManager.disableBlend();

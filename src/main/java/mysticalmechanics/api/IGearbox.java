@@ -1,20 +1,39 @@
 package mysticalmechanics.api;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 
+import javax.annotation.Nullable;
+
 public interface IGearbox {
+    @Deprecated
+    default void attachGear(EnumFacing facing, ItemStack stack) {
+        attachGear(facing, stack, null);
+    }
+
     /**
      * @param facing the side to attach the gear to.
+     * @param player the player attaching the gear, can be null
      * @param stack the gear to attach.
      */
-    void attachGear(EnumFacing facing, ItemStack stack);
+    default void attachGear(EnumFacing facing, ItemStack stack, @Nullable EntityPlayer player) {
+        attachGear(facing, stack);
+    }
+
+    @Deprecated
+    default ItemStack detachGear(EnumFacing facing) {
+        return detachGear(facing, null);
+    }
 
     /**
      * @param facing the side to remove the gear from.
+     * @param player the player removing the gear, can be null
      * @return the removed gear. Does not need to be the same gear as previously attached, but could be a damaged version or an empty stack.
      */
-    ItemStack detachGear(EnumFacing facing);
+    default ItemStack detachGear(EnumFacing facing, @Nullable EntityPlayer player) {
+        return detachGear(facing);
+    }
 
     /**
      * @param facing the side to check for.

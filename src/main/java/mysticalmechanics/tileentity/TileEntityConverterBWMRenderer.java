@@ -1,6 +1,8 @@
 package mysticalmechanics.tileentity;
 
 import mysticalmechanics.MysticalMechanics;
+import mysticalmechanics.api.GearHelper;
+import mysticalmechanics.api.GearHelperTile;
 import mysticalmechanics.api.MysticalMechanicsAPI;
 import mysticalmechanics.block.BlockGearbox;
 import net.minecraft.block.state.IBlockState;
@@ -44,7 +46,7 @@ public class TileEntityConverterBWMRenderer extends TileEntitySpecialRenderer<Ti
             boolean correctHit = result != null && result.typeOfHit == RayTraceResult.Type.BLOCK && result.getBlockPos().equals(tile.getPos());
             boolean isHoldingGear = MysticalMechanicsAPI.IMPL.isValidGear(heldItem);
             EnumFacing direction = tile.getSideMystMech();
-            ItemStack gear = tile.gear;
+            GearHelper gear = tile.gear;
             boolean hitSide = false;
             if (correctHit) {
                 EnumFacing sideHit = result.sideHit;
@@ -95,13 +97,14 @@ public class TileEntityConverterBWMRenderer extends TileEntitySpecialRenderer<Ti
 
                 //render hologram
                 double offset = -0.375;
+                ItemStack gearStack = gear.getGear();
                 if (hitSide && MysticalMechanics.RENDER_GEAR_HOLOGRAM) {
                     double startOffset;
                     double endOffset;
                     if (gear.isEmpty()) {
                         startOffset = -0.5;
                         endOffset = offset;
-                        gear = heldItem;
+                        gearStack = heldItem;
                     } else {
                         startOffset = offset;
                         endOffset = -0.5;
@@ -113,7 +116,7 @@ public class TileEntityConverterBWMRenderer extends TileEntitySpecialRenderer<Ti
                 GlStateManager.scale(0.875, 0.875, 0.875);
                 GlStateManager.rotate(
                         ((float) (partialTicks * angle) + (1 - partialTicks) * (float) lastAngle), 0, 0, 1);
-                Minecraft.getMinecraft().getRenderItem().renderItem(gear,
+                Minecraft.getMinecraft().getRenderItem().renderItem(gearStack,
                         ItemCameraTransforms.TransformType.FIXED);
                 GlStateManager.popMatrix();
                 GlStateManager.disableBlend();

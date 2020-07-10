@@ -1,5 +1,6 @@
 package mysticalmechanics.api;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -19,6 +20,14 @@ public interface IGearBehavior {
             //NOOP;
         }
     };
+
+    default void onAttach(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, EntityPlayer player) {
+        //NOOP
+    }
+
+    default ItemStack onDetach(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, EntityPlayer player) {
+        return gear;
+    }
 
     /**
      * Implement to modify how much power this gear can transmit. This should be suitable to implement all manner of mechanics like low/high-pass filters, friction and power limits.

@@ -2,16 +2,13 @@ package mysticalmechanics.tileentity;
 
 import betterwithmods.api.BWMAPI;
 import betterwithmods.api.capabilities.CapabilityMechanicalPower;
-import mysticalmechanics.MysticalMechanics;
 import mysticalmechanics.api.*;
 import mysticalmechanics.block.BlockConverterBWM;
-import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.util.Misc;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -20,13 +17,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class TileEntityConverterBWM extends TileEntity implements ITickable, IGearbox {
@@ -35,7 +30,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
     ConverterMystMechCapability capabilityMystMech;
     ConverterBWMCapability capabilityBWM;
 
-    ItemStack gear = ItemStack.EMPTY;
+    GearHelperTile gear;
     double angle, lastAngle;
 
     public TileEntityConverterBWM() {
@@ -88,23 +83,18 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
 
     @Override
     public void update() {
-        IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gear);
         if(!world.isRemote) {
             int powerBWM = capabilityBWM.calculateInput();
             if (capabilityBWM.power != powerBWM) {
                 capabilityBWM.power = powerBWM;
                 capabilityMystMech.onPowerChange();
             }
-            behavior.visualUpdate(this,getSideMystMech(),gear);
+            gear.visualUpdate();
         } else {
             updateAngle(null);
-            tickGear(getSideMystMech(), gear, behavior);
+            double power = capabilityMystMech.getPower(gear.getFacing());
+            gear.tick(power);
         }
-    }
-
-    protected void tickGear(EnumFacing facing, ItemStack gear, IGearBehavior behavior) {
-        if(behavior.canTick(gear))
-            behavior.tick(this,facing,gear,capabilityMystMech.getPower(facing));
     }
 
     protected void updateAngle(EnumFacing facing) {
@@ -117,8 +107,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
         super.writeToNBT(tag);
         capabilityMystMech.writeToNBT(tag);
         tag.setInteger("bwmPower",capabilityBWM.power);
-        if(!gear.isEmpty())
-            tag.setTag("gear", gear.writeToNBT(new NBTTagCompound()));
+        tag.setTag("side", gear.writeToNBT(new NBTTagCompound()));
         return tag;
     }
 
@@ -127,7 +116,9 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
         super.readFromNBT(tag);
         capabilityMystMech.readFromNBT(tag);
         capabilityBWM.power = tag.getInteger("bwmPower");
-        gear = new ItemStack(tag.getCompoundTag("gear"));
+        gear.readFromNBT(tag.getCompoundTag("side"));
+        if(tag.hasKey("gear"))
+            gear.setGear(new ItemStack(tag.getCompoundTag("gear")));
     }
 
     @Override
@@ -207,14 +198,14 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
         if (!heldItem.isEmpty() && canAttachGear(attachSide,heldItem) && getGear(attachSide).isEmpty() && MysticalMechanicsAPI.IMPL.isValidGear(heldItem)) {
             ItemStack gear = heldItem.copy();
             gear.setCount(1);
-            attachGear(attachSide,gear);
+            attachGear(attachSide,gear,player);
             heldItem.shrink(1);
             if (heldItem.isEmpty()) {
                 player.setHeldItem(hand, ItemStack.EMPTY);
             }
             return true;
         } else if (!getGear(attachSide).isEmpty()) {
-            ItemStack gear = detachGear(attachSide);
+            ItemStack gear = detachGear(attachSide,player);
             if (!world.isRemote) {
                 world.spawnEntity(new EntityItem(world, player.posX, player.posY + player.height / 2.0f, player.posZ, gear));
             }
@@ -233,10 +224,10 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
     }
 
     public void breakBlock(World world, BlockPos pos, IBlockState state, EntityPlayer player) {
+        ItemStack stack = gear.detach(player);
         if (!world.isRemote) {
-            world.spawnEntity(new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, gear));
+            world.spawnEntity(new EntityItem(world, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack));
         }
-        gear = ItemStack.EMPTY;
         isBroken = true;
         capabilityMystMech.setPower(0, null);
         updateNeighbors();
@@ -249,22 +240,19 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
     }
 
     @Override
-    public void attachGear(EnumFacing facing, ItemStack stack) {
+    public void attachGear(EnumFacing facing, ItemStack stack, EntityPlayer player) {
         if (!canAttachGear(facing, stack))
             return;
-        gear = stack;
-        world.playSound(null,pos, RegistryHandler.GEAR_ADD, SoundCategory.BLOCKS,1.0f,1.0f);
+        gear.attach(null, stack);
         capabilityMystMech.onPowerChange();
         world.neighborChanged(pos.offset(getSideMystMech()),blockType,pos);
     }
 
     @Override
-    public ItemStack detachGear(EnumFacing facing) {
+    public ItemStack detachGear(EnumFacing facing, EntityPlayer player) {
         if (!canAttachGear(facing))
             return ItemStack.EMPTY;
-        ItemStack removed = gear;
-        gear = ItemStack.EMPTY;
-        world.playSound(null,pos,RegistryHandler.GEAR_REMOVE,SoundCategory.BLOCKS,1.0f,1.0f);
+        ItemStack removed = gear.detach(null);
         capabilityMystMech.onPowerChange();
         world.neighborChanged(pos.offset(getSideMystMech()),blockType,pos);
         return removed;
@@ -272,12 +260,12 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
 
     @Override
     public ItemStack getGear(EnumFacing facing) {
-        return gear;
+        return gear.getGear();
     }
 
     @Override
     public boolean canAttachGear(EnumFacing facing, ItemStack stack) {
-        return canAttachGear(facing);
+        return canAttachGear(facing) && gear.canAttach(stack);
     }
 
     @Override
