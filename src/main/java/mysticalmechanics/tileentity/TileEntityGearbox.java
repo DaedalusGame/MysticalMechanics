@@ -2,6 +2,7 @@ package mysticalmechanics.tileentity;
 
 import mysticalmechanics.MysticalMechanics;
 import mysticalmechanics.api.*;
+import mysticalmechanics.api.lubricant.TileLubricantCapability;
 import mysticalmechanics.block.BlockGearbox;
 import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.util.ISoundController;
@@ -33,10 +34,9 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     protected boolean isBroken;
     public int connections = 0;
     public GearHelperTile[] gears = new GearHelperTile[6];
-    public double[] angles = new double[6];
-    public double[] lastAngles = new double[6];
 
     public DefaultMechCapability capability;
+    public TileLubricantCapability lubricant;
 
     //Don't look at me
     public static final int SOUND_SLOW_LV1 = 1;
@@ -58,6 +58,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         capability = createCapability();
         for(int i = 0; i < gears.length; i++)
             gears[i] = new GearHelperTile(this, EnumFacing.getFront(i));
+        lubricant = new TileLubricantCapability(this, 1000);
     }
 
     public DefaultMechCapability createCapability() {
@@ -153,6 +154,9 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         if (capability == MysticalMechanicsAPI.MECH_CAPABILITY) {
             return true;
         }
+        if (capability == MysticalMechanicsAPI.LUBRICANT_CAPABILITY) {
+            return true;
+        }
         return super.hasCapability(capability, facing);
     }
 
@@ -162,6 +166,9 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         	@SuppressWarnings("unchecked") 
 			T result = (T) this.capability;
             return result;
+        }
+        if (capability == MysticalMechanicsAPI.LUBRICANT_CAPABILITY) {
+            return (T) lubricant;
         }
         return super.getCapability(capability, facing);
     }
@@ -359,28 +366,15 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
             int i = facing.getIndex();
             double power = getInternalPower(facing);
             if(world.isRemote) {
-                updateAngle(facing);
-                gears[i].visualUpdate();
+                gears[i].visualUpdate(capability.getVisualPower(facing));
             }
             gears[i].tick(power);
         }
+        lubricant.tick();
     }
 
     protected double getInternalPower(EnumFacing facing) {
         return ((GearboxMechCapability)capability).getInternalPower(facing);
-    }
-
-    protected void updateAngle(EnumFacing facing) {
-        lastAngles[facing.getIndex()] = angles[facing.getIndex()];
-        angles[facing.getIndex()] += capability.getVisualPower(facing);
-    }
-
-    public double getAngle(EnumFacing face) {
-        return angles[face.getIndex()];
-    }
-
-    public double getLastAngle(EnumFacing face) {
-        return lastAngles[face.getIndex()];
     }
 
     public void rotateTile(World world, BlockPos pos, EnumFacing side) {

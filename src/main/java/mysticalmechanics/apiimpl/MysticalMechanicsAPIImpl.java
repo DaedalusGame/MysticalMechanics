@@ -2,9 +2,13 @@ package mysticalmechanics.apiimpl;
 
 import mysticalmechanics.MysticalMechanics;
 import mysticalmechanics.api.*;
+import mysticalmechanics.api.lubricant.ILubricant;
+import mysticalmechanics.api.lubricant.SimpleLubricant;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -20,6 +24,7 @@ public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
     public static LinkedHashMap<ResourceLocation, GearStruct> GEAR_REGISTRY = new LinkedHashMap<>();
     public static LinkedHashMap<String, IMechUnit> UNITS = new LinkedHashMap<>();
     private static HashMap<String,IConfigValue> CONFIG_VALUES = new HashMap<>();
+    private static LinkedHashMap<ResourceLocation, Function<NBTTagCompound, ILubricant>> LUBRICANT_REGISTRY = new LinkedHashMap<>();
 
     private IMechUnit unitDefault;
     private boolean unitDirty;
@@ -74,6 +79,30 @@ public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
                 if (struct.ingredient.apply(stack))
                     return true;
         return false;
+    }
+
+    @Override
+    public void registerLubricant(ResourceLocation resLoc, Function<NBTTagCompound, ILubricant> generator) {
+        LUBRICANT_REGISTRY.put(resLoc,generator);
+    }
+
+    @Override
+    public void registerSimpleLubricant(SimpleLubricant lubricant) {
+        registerLubricant(lubricant.getType(), tag -> lubricant);
+    }
+
+    @Override
+    public void unregisterLubricant(ResourceLocation resLoc) {
+        LUBRICANT_REGISTRY.remove(resLoc);
+    }
+
+    @Override
+    public ILubricant deserializeLubricant(NBTTagCompound tag) {
+        ResourceLocation resLoc = new ResourceLocation(tag.getString("type"));
+        Function<NBTTagCompound, ILubricant> generator = LUBRICANT_REGISTRY.get(resLoc);
+        if(generator != null)
+            return generator.apply(tag);
+        return null;
     }
 
     @Override

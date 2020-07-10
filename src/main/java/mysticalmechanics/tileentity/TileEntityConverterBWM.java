@@ -31,11 +31,16 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
     ConverterBWMCapability capabilityBWM;
 
     GearHelperTile gear;
-    double angle, lastAngle;
 
     public TileEntityConverterBWM() {
         capabilityBWM = new ConverterBWMCapability();
         capabilityMystMech = new ConverterMystMechCapability();
+        gear = new GearHelperTile(this, null){
+            @Override
+            public EnumFacing getFacing() {
+                return getSideMystMech();
+            }
+        };
     }
 
     public boolean canConvertToBWM() {
@@ -89,17 +94,11 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
                 capabilityBWM.power = powerBWM;
                 capabilityMystMech.onPowerChange();
             }
-            gear.visualUpdate();
+            gear.visualUpdate(capabilityMystMech.getVisualPower(getSideMystMech()));
         } else {
-            updateAngle(null);
             double power = capabilityMystMech.getPower(gear.getFacing());
             gear.tick(power);
         }
-    }
-
-    protected void updateAngle(EnumFacing facing) {
-        lastAngle = angle;
-        angle += capabilityMystMech.getVisualPower(getSideMystMech());
     }
 
     @Override

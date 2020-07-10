@@ -2,6 +2,7 @@ package mysticalmechanics.tileentity;
 
 import mysticalmechanics.MysticalMechanics;
 import mysticalmechanics.api.GearHelper;
+import mysticalmechanics.api.GearHelperTile;
 import mysticalmechanics.api.MysticalMechanicsAPI;
 import mysticalmechanics.block.BlockGearbox;
 import net.minecraft.block.state.IBlockState;
@@ -47,7 +48,7 @@ public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEnt
             IBlockState state = tile.getWorld().getBlockState(tile.getPos());
             if (state.getBlock() instanceof BlockGearbox){
 				int face = 0;
-				for (GearHelper gear : tile.gears) {
+				for (GearHelperTile gear : tile.gears) {
 					EnumFacing direction = EnumFacing.VALUES[face];
 					boolean hitSide = false;
 					if(correctHit) {
@@ -92,9 +93,6 @@ public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEnt
 							break;
 
 						}
-						
-						double angle = tile.getAngle(direction);
-		                double lastAngle = tile.getLastAngle(direction);
 
 		                double totalTick = tick + partialTicks;
 
@@ -119,8 +117,7 @@ public class TileEntityGearboxRenderer extends TileEntitySpecialRenderer<TileEnt
 						GlStateManager.color(0.5f,0.5f,0.5f,0.5f);
 						GlStateManager.translate(0, 0, offset);
 						GlStateManager.scale(0.875, 0.875, 0.875);
-						GlStateManager.rotate(
-								((float) (partialTicks * angle) + (1 - partialTicks) * (float) lastAngle), 0, 0, 1);
+						GlStateManager.rotate((float) gear.getPartialAngle(partialTicks), 0, 0, 1);
 						Minecraft.getMinecraft().getRenderItem().renderItem(gearStack,
 								ItemCameraTransforms.TransformType.FIXED);
 						GlStateManager.popMatrix();

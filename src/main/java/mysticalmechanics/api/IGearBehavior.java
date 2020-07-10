@@ -81,7 +81,7 @@ public interface IGearBehavior {
      * @param gear the ItemStack representing the attached gear
      */
     default void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear) {
-        visualUpdate(tile, facing, gear, null);
+        //NOOP
     }
 
     /**
@@ -90,7 +90,7 @@ public interface IGearBehavior {
      * @param data the gear's data container
      */
     default void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data) {
-        //NOOP
+        visualUpdate(tile, facing, gear);
     }
 
     default boolean canTick(ItemStack gear) {
@@ -98,11 +98,11 @@ public interface IGearBehavior {
     }
 
     default void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
-        tick(tile, facing, gear, null, power);
+        //NOOP
     }
 
     default void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double power) {
-        //NOOP;
+        tick(tile, facing, gear, power);
     }
 
     default boolean hasData() {

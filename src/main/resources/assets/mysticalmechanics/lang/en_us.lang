@@ -17,6 +17,8 @@ subtitles.gear.remove=Gear detached
 
 mysticalmechanics.unit.default=%s R
 
+mysticalmechanics.lubricant.test_lubricant=Test Lubricant
+
 mysticalmechanics.tooltip.creative_source.set=Set to output: %s R
 mysticalmechanics.tooltip.bwm_converter.off=Converting to Better With Mods power
 mysticalmechanics.tooltip.bwm_converter.on=Converting to Mystical Mechanics power
@@ -25,3 +27,5 @@ mysticalmechanics.probe.axle_length=Length:
 mysticalmechanics.probe.power=⚙ %s
 mysticalmechanics.probe.input_power=§9⬊§r %s
 mysticalmechanics.probe.output_power=§6⬉§r %s
+
+mysticalmechanics.probe.lubricant=Can lubricate

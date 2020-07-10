@@ -6,7 +6,9 @@ import mysticalmechanics.api.IAxle;
 import mysticalmechanics.api.IGearbox;
 import mysticalmechanics.api.IMechCapability;
 import mysticalmechanics.api.MysticalMechanicsAPI;
-import mysticalmechanics.handler.RegistryHandler;
+import mysticalmechanics.api.lubricant.ILubricant;
+import mysticalmechanics.api.lubricant.ILubricantCapability;
+import mysticalmechanics.api.lubricant.LubricantStack;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -59,6 +61,8 @@ public class TheOneProbe implements Function<ITheOneProbe, Void>, IProbeInfoProv
 
         if (tile != null) {
             List<MechInfoStruct> info = new ArrayList<>();
+            List<LubricantInfoStruct> infoLubricant = new ArrayList<>();
+            boolean canLubricate = false;
             if(mode == ProbeMode.EXTENDED)
             for (EnumFacing facing : EnumFacing.VALUES) {
                 boolean forceWrite = false;
@@ -88,7 +92,15 @@ public class TheOneProbe implements Function<ITheOneProbe, Void>, IProbeInfoProv
                     else
                         info.add(struct);
                 }
+                if (tile.hasCapability(MysticalMechanicsAPI.LUBRICANT_CAPABILITY, facing)) {
+                    canLubricate = true;
+                    ILubricantCapability capability = tile.getCapability(MysticalMechanicsAPI.LUBRICANT_CAPABILITY, facing);
+                    for (LubricantStack stack : capability.getAppliedLubricant()) {
+                        infoLubricant.add(new LubricantInfoStruct(stack, capability.getCapacity()));
+                    }
+                }
             }
+
             Map<MechInfoType, List<MechInfoStruct>> grouped = info.stream().collect(Collectors.groupingBy(mechInfoStruct -> mechInfoStruct.type));
             if(grouped.entrySet().stream().allMatch(entry -> entry.getValue().stream().distinct().count() <= 1)) {
                 for (List<MechInfoStruct> struct : grouped.values()) {
@@ -99,6 +111,19 @@ public class TheOneProbe implements Function<ITheOneProbe, Void>, IProbeInfoProv
                 for (MechInfoStruct struct : info) {
                     addMechPowerData(mode,probeInfo,struct,ItemStack.EMPTY,currentFacing);
                 }
+            }
+
+            if(canLubricate)
+                probeInfo.text(IProbeInfo.STARTLOC+"mysticalmechanics.probe.lubricant"+IProbeInfo.ENDLOC);
+            Map<LubricantStack, List<LubricantInfoStruct>> groupedLubricants = infoLubricant.stream().collect(Collectors.groupingBy(LubricantInfoStruct::getStack));
+            for (Map.Entry<LubricantStack, List<LubricantInfoStruct>> entry : groupedLubricants.entrySet()) {
+                LubricantStack stack = entry.getKey();
+                ILubricant lubricant = stack.getLubricant();
+                int capacity = entry.getValue().stream().mapToInt(LubricantInfoStruct::getCapacity).max().getAsInt();
+                IProbeInfo part = probeInfo.horizontal(probeInfo.defaultLayoutStyle().spacing(3).alignment(ElementAlignment.ALIGN_BOTTOMRIGHT));
+
+                part.progress(stack.getAmount(), capacity, probeInfo.defaultProgressStyle().width(32).filledColor(lubricant.getColor().getRGB()).alternateFilledColor(lubricant.getColor().getRGB()));
+                part.text(IProbeInfo.STARTLOC+stack.getUnlocalizedName()+IProbeInfo.ENDLOC);
             }
         }
     }
@@ -152,6 +177,24 @@ public class TheOneProbe implements Function<ITheOneProbe, Void>, IProbeInfoProv
         @Override
         public int hashCode() {
             return type.hashCode() ^ Double.hashCode(power);
+        }
+    }
+
+    class LubricantInfoStruct {
+        LubricantStack stack;
+        int capacity;
+
+        public LubricantInfoStruct(LubricantStack stack, int capacity) {
+            this.stack = stack;
+            this.capacity = capacity;
+        }
+
+        public LubricantStack getStack() {
+            return stack;
+        }
+
+        public int getCapacity() {
+            return capacity;
         }
     }
 }

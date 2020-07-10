@@ -46,7 +46,7 @@ public class TileEntityConverterBWMRenderer extends TileEntitySpecialRenderer<Ti
             boolean correctHit = result != null && result.typeOfHit == RayTraceResult.Type.BLOCK && result.getBlockPos().equals(tile.getPos());
             boolean isHoldingGear = MysticalMechanicsAPI.IMPL.isValidGear(heldItem);
             EnumFacing direction = tile.getSideMystMech();
-            GearHelper gear = tile.gear;
+            GearHelperTile gear = tile.gear;
             boolean hitSide = false;
             if (correctHit) {
                 EnumFacing sideHit = result.sideHit;
@@ -90,9 +90,6 @@ public class TileEntityConverterBWMRenderer extends TileEntitySpecialRenderer<Ti
 
                 }
 
-                double angle = tile.angle;
-                double lastAngle = tile.lastAngle;
-
                 double totalTick = tick + partialTicks;
 
                 //render hologram
@@ -114,8 +111,7 @@ public class TileEntityConverterBWMRenderer extends TileEntitySpecialRenderer<Ti
                 //render the gears and rotate them based on how much power they have.
                 GlStateManager.translate(0, 0, offset);
                 GlStateManager.scale(0.875, 0.875, 0.875);
-                GlStateManager.rotate(
-                        ((float) (partialTicks * angle) + (1 - partialTicks) * (float) lastAngle), 0, 0, 1);
+                GlStateManager.rotate((float) gear.getPartialAngle(partialTicks), 0, 0, 1);
                 Minecraft.getMinecraft().getRenderItem().renderItem(gearStack,
                         ItemCameraTransforms.TransformType.FIXED);
                 GlStateManager.popMatrix();

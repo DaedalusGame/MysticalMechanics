@@ -1,8 +1,11 @@
 package mysticalmechanics.api;
 
+import mysticalmechanics.api.lubricant.ILubricant;
+import mysticalmechanics.api.lubricant.SimpleLubricant;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -61,6 +64,14 @@ public interface IMysticalMechanicsAPI {
      * @return whether the provided ItemStack is a valid, registered gear.
      */
     boolean isValidGear(ItemStack stack);
+
+    void registerLubricant(ResourceLocation resLoc, Function<NBTTagCompound, ILubricant> generator);
+
+    void registerSimpleLubricant(SimpleLubricant lubricant);
+
+    void unregisterLubricant(ResourceLocation resLoc);
+
+    ILubricant deserializeLubricant(NBTTagCompound tag);
 
     /**
      * Adds a unit for mechanical power.

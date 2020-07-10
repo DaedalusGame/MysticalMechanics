@@ -1,13 +1,15 @@
 package mysticalmechanics;
 
 import mysticalmechanics.api.*;
+import mysticalmechanics.api.lubricant.DefaultLubricantCapability;
+import mysticalmechanics.api.lubricant.ILubricantCapability;
+import mysticalmechanics.api.lubricant.SimpleLubricant;
 import mysticalmechanics.apiimpl.ConfigValue;
 import mysticalmechanics.apiimpl.MysticalMechanicsAPIImpl;
 import mysticalmechanics.compat.BetterWithMods;
 import mysticalmechanics.compat.TheOneProbe;
 import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.handler.RightClickHandler;
-import mysticalmechanics.tileentity.*;
 import mysticalmechanics.util.FanBehavior;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
@@ -26,12 +28,12 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreIngredient;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -57,6 +59,8 @@ public class MysticalMechanics
 
     //RENDER
     public static boolean RENDER_GEAR_HOLOGRAM;
+
+    public static SimpleLubricant TEST_LUBRICANT;
 
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event)
@@ -124,6 +128,18 @@ public class MysticalMechanics
                 //NOOP
             }
         }, DefaultMechCapability::new);
+        CapabilityManager.INSTANCE.register(ILubricantCapability.class, new Capability.IStorage<ILubricantCapability>() {
+            @Nullable
+            @Override
+            public NBTBase writeNBT(Capability<ILubricantCapability> capability, ILubricantCapability instance, EnumFacing side) {
+                return null;
+            }
+
+            @Override
+            public void readNBT(Capability<ILubricantCapability> capability, ILubricantCapability instance, EnumFacing side, NBTBase nbt) {
+                //NOOP
+            }
+        }, DefaultLubricantCapability::new);
     }
 
     private void loadConfig() {
@@ -224,6 +240,9 @@ public class MysticalMechanics
             }
         });
         MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_fan"), Ingredient.fromItem(RegistryHandler.FAN), new FanBehavior());
+
+        TEST_LUBRICANT = new SimpleLubricant(new ResourceLocation(MODID, "test_lubricant"), new Color(128, 255, 128)).setParameter("speed", 10.0);
+        MysticalMechanicsAPI.IMPL.registerSimpleLubricant(TEST_LUBRICANT);
     }
 
 }
