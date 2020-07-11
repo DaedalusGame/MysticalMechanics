@@ -1,0 +1,31 @@
+itemGroup.mysticalmechanics.name=Mystical Mechanics
+
+tile.axle_iron.name=Eisenachse
+tile.gearbox_frame.name=Getriebe-Rahmen
+tile.mergebox_frame.name=Mischbox-Rahmen
+tile.creative_mech_source.name=Kreative mechanische Quelle
+tile.converter_bwm.name=Archaischer Konverter
+
+item.gear_iron.name=Eisen-Zahnrad
+item.gear_gold.name=Gold-Zahnrad
+item.gear_gold_on.name=Redstone-Zahnrad (invertiert)
+item.gear_gold_off.name=Redstone-Zahnrad
+item.gear_fan.name=Eisen-Ventilator
+
+subtitles.gear.add=Zahnrad montiert
+subtitles.gear.remove=Zahnrad demontiert
+
+mysticalmechanics.unit.default=%s R
+
+mysticalmechanics.lubricant.test_lubricant=Test-Schmierstoff
+
+mysticalmechanics.tooltip.creative_source.set=Auf Ausgabe setzen: %s R
+mysticalmechanics.tooltip.bwm_converter.off=Konvertieren zu Better With Mods-Energie
+mysticalmechanics.tooltip.bwm_converter.on=Konvertieren zu Mystical Mechanics-Energie
+
+mysticalmechanics.probe.axle_length=Länge:
+mysticalmechanics.probe.power=⚙ %s
+mysticalmechanics.probe.input_power=§9⬊§r %s
+mysticalmechanics.probe.output_power=§6⬉§r %s
+
+mysticalmechanics.probe.lubricant=Kann schmieren
