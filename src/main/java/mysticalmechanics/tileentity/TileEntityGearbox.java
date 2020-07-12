@@ -373,17 +373,28 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         }
         for(EnumFacing facing : EnumFacing.VALUES) {
             int i = facing.getIndex();
-            double powerIn = getExternalPower(facing);
-            double power = getInternalPower(facing);
-            double powerOut = capability.getPower(facing);
             if(world.isRemote) {
-                gears[i].visualUpdate(powerIn, power, capability.getVisualPower(facing));
+                gears[i].visualUpdate(getGearInPower(facing), capability.getVisualPower(facing));
             }
-            gears[i].tick(powerIn, power, powerOut);
+            gears[i].tick(getGearInPower(facing), getGearOutPower(facing));
             if(gears[i].isDirty())
                 shouldUpdate = true;
         }
         lubricant.tick();
+    }
+
+    private double getGearInPower(EnumFacing facing) {
+        if(capability.isInput(facing))
+            return getExternalPower(facing);
+        else
+            return getInternalPower(facing);
+    }
+
+    private double getGearOutPower(EnumFacing facing) {
+        if(capability.isOutput(facing))
+            return capability.getPower(facing);
+        else
+            return getInternalPower(facing);
     }
 
     protected double getExternalPower(EnumFacing facing) {
@@ -448,7 +459,11 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                 return 0;
             }
 
-            double unchangedPower = getInternalPower(from);
+            double unchangedPower;
+            if(isInput(from))
+                unchangedPower = getExternalPower(from);
+            else
+                unchangedPower = getInternalPower(from);
 
             if (gearHelper == null)
                 return unchangedPower;
@@ -459,7 +474,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
 
         protected double getInternalPower(EnumFacing from) {
             //need to work out solution for null checks that aren't the renderer.
-            if (from == TileEntityGearbox.this.from)//|| from == null
+            if (isInput(from))//|| from == null
                 return capability.power;
             else
                 return power / ((double) (Math.max(1, getConnections())));

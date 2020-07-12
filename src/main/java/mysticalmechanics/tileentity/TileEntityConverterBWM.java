@@ -74,6 +74,20 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
             return 0;
     }
 
+    private double getGearInPower(EnumFacing facing) {
+        if(capabilityMystMech.isInput(facing))
+            return capabilityMystMech.getExternalPower(facing);
+        else
+            return capabilityMystMech.getInternalPower(facing);
+    }
+
+    private double getGearOutPower(EnumFacing facing) {
+        if(capabilityMystMech.isOutput(facing))
+            return capabilityMystMech.getExternalPower(facing);
+        else
+            return capabilityMystMech.getInternalPower(facing);
+    }
+
     public EnumFacing getSideBWM() {
         return getFacing().getOpposite();
     }
@@ -100,14 +114,13 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
                 capabilityMystMech.onPowerChange();
             }
         }
-        double powerIn = capabilityMystMech.getExternalPower(gear.getFacing());
-        double power = capabilityMystMech.getInternalPower(gear.getFacing());
-        double powerOut = capabilityMystMech.getPower(gear.getFacing());
-        gear.tick(powerIn, power, powerOut);
+        double powerIn = getGearInPower(gear.getFacing());
+        double powerOut = getGearOutPower(gear.getFacing());
+        gear.tick(powerIn, powerOut);
         if(gear.isDirty())
             shouldUpdate = true;
         if(world.isRemote)
-            gear.visualUpdate(powerIn, power, capabilityMystMech.getVisualPower(getSideMystMech()));
+            gear.visualUpdate(powerIn, capabilityMystMech.getVisualPower(getSideMystMech()));
     }
 
     @Override
@@ -354,7 +367,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
         }
 
         public double getExternalPower(EnumFacing from) {
-            if (from == getSideMystMech() && canConvertToBWM())
+            if (from == getSideMystMech())
                 return powerExternal;
             else
                 return 0;

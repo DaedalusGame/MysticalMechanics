@@ -171,8 +171,10 @@ public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
     public void pullPower(TileEntity tileSelf, EnumFacing sideSelf, IMechCapability capSelf, boolean hasGear) {
         TileEntity tileOther = tileSelf.getWorld().getTileEntity(tileSelf.getPos().offset(sideSelf));
         EnumFacing sideOther = sideSelf.getOpposite();
+        boolean hasValidTile = false;
         if(tileOther != null) {
             IMechCapability capOther = tileOther.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, sideOther);
+            hasValidTile = capOther != null;
             if (capOther != null && !capSelf.isOutput(sideSelf)) {
                 if (hasGear && capOther.isOutput(sideOther))
                     capSelf.setPower(capOther.getPower(sideOther), sideSelf);
@@ -180,6 +182,8 @@ public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
                     capSelf.setPower(0, sideSelf);
             }
         }
+        if(!hasValidTile)
+            capSelf.setPower(0, sideSelf);
     }
 
     static class GearStruct {

@@ -1,7 +1,10 @@
 package mysticalmechanics.util;
 
+import mysticalmechanics.MysticalMechanics;
 import mysticalmechanics.api.IGearBehavior;
 import mysticalmechanics.api.IGearData;
+import mysticalmechanics.api.IMechCapability;
+import mysticalmechanics.api.MysticalMechanicsAPI;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -34,19 +37,22 @@ public class FanBehavior implements IGearBehavior {
     }
 
     @Override
-    public void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double powerIn, double powerInternal, double powerOut) {
-        World world = tile.getWorld();
-        AxisAlignedBB aabb = new AxisAlignedBB(tile.getPos().offset(facing));
-        double distance = getBlowDistance(powerOut);
-        double vx = facing.getFrontOffsetX();
-        double vy = facing.getFrontOffsetY();
-        double vz = facing.getFrontOffsetZ();
-        double blowVelocity = getBlowVelocity(powerOut);
-        aabb = aabb.expand(vx *distance, vy *distance, vz *distance);
+    public void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double powerIn, double powerOut) {
+        IMechCapability capability = tile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, facing);
+        if(capability != null && capability.isOutput(facing)) {
+            World world = tile.getWorld();
+            AxisAlignedBB aabb = new AxisAlignedBB(tile.getPos().offset(facing));
+            double distance = getBlowDistance(powerIn);
+            double vx = facing.getFrontOffsetX();
+            double vy = facing.getFrontOffsetY();
+            double vz = facing.getFrontOffsetZ();
+            double blowVelocity = getBlowVelocity(powerIn);
+            aabb = aabb.expand(vx * distance, vy * distance, vz * distance);
 
-        List<Entity> entities = world.getEntitiesWithinAABB(Entity.class,aabb);
-        for(Entity entity : entities) {
-            entity.addVelocity(vx*blowVelocity,vy*blowVelocity,vz*blowVelocity);
+            List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, aabb);
+            for (Entity entity : entities) {
+                entity.addVelocity(vx * blowVelocity, vy * blowVelocity, vz * blowVelocity);
+            }
         }
     }
 

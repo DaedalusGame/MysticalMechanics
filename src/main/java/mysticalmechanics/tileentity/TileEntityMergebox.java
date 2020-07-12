@@ -120,7 +120,11 @@ public class TileEntityMergebox extends TileEntityGearbox {
                 return 0;
             }
 
-            double unchangedPower = getInternalPower(from);
+            double unchangedPower;
+            if(isInput(from))
+                unchangedPower = getExternalPower(from);
+            else
+                unchangedPower = getInternalPower(from);
 
             if (gearHelper == null)
                 return unchangedPower;

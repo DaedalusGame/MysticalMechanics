@@ -87,13 +87,9 @@ public class VarGearBehavior implements IGearBehavior {
     }
 
     @Override
-    public void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double powerIn, double powerInternal, double powerOut) {
-        IMechCapability capability = tile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, facing);
-        if(capability != null && data instanceof Data) {
-            if(capability.isOutput(facing))
-                ((Data) data).add(powerInternal);
-            if(capability.isInput(facing))
-                ((Data) data).add(powerIn);
+    public void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double powerIn, double powerOut) {
+        if(data instanceof Data) {
+            ((Data) data).add(powerIn);
         }
     }
 

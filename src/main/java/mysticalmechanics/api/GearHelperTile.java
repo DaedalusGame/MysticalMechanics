@@ -61,14 +61,14 @@ public class GearHelperTile extends GearHelper {
         return stack;
     }
 
-    public void tick(double in, double internal, double out) {
+    public void tick(double in, double out) {
         IGearBehavior behavior = getBehavior();
-        behavior.tick(tile, getFacing(), gear, data, in, internal, out);
+        behavior.tick(tile, getFacing(), gear, data, in, out);
     }
 
-    public void visualUpdate(double in, double internal, double out) {
+    public void visualUpdate(double in, double out) {
         IGearBehavior behavior = getBehavior();
-        behavior.visualUpdate(tile, getFacing(), gear, data, in, internal, out);
+        behavior.visualUpdate(tile, getFacing(), gear, data, in, out);
         updateAngle(out);
     }
 
