@@ -239,6 +239,6 @@ public class MysticalMechanics
             }
         });
         MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_fan"), Ingredient.fromItem(RegistryHandler.FAN), new FanBehavior());
-        MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_test"), new OreIngredient("stone"), new VarGearBehavior());
+        //MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_test"), new OreIngredient("stone"), new VarGearBehavior());
     }
 }
