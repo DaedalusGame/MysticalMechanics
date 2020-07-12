@@ -3,10 +3,7 @@ package mysticalmechanics.tileentity;
 import java.util.ArrayList;
 import java.util.List;
 
-import mysticalmechanics.api.DefaultMechCapability;
-import mysticalmechanics.api.IGearBehavior;
-import mysticalmechanics.api.IMechCapability;
-import mysticalmechanics.api.MysticalMechanicsAPI;
+import mysticalmechanics.api.*;
 import mysticalmechanics.block.BlockGearbox;
 import mysticalmechanics.util.Misc;
 import net.minecraft.block.state.IBlockState;
@@ -96,30 +93,34 @@ public class TileEntityMergebox extends TileEntityGearbox {
 
         @Override
         public double getPower(EnumFacing from) {
-            ItemStack gearStack = getGear(from);
-            if (from != null && getGear(from).isEmpty()) {
+            GearHelper gearHelper = getGearHelper(from);
+            if (gearHelper != null && gearHelper.isEmpty()) {
                 return 0;
             }
 
-            IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
-
             double unchangedPower = getInternalPower(from);
 
-            return behavior.transformPower(TileEntityMergebox.this, from, gearStack, unchangedPower);
+            if (gearHelper == null)
+                return unchangedPower;
+
+            IGearBehavior behavior = gearHelper.getBehavior();
+            return behavior.transformPower(TileEntityMergebox.this, from, gearHelper.getGear(), gearHelper.getData(), unchangedPower);
         }
 
         @Override
         public double getVisualPower(EnumFacing from) {
-            ItemStack gearStack = getGear(from);
-            if (from != null && getGear(from).isEmpty()) {
+            GearHelper gearHelper = getGearHelper(from);
+            if (gearHelper != null && gearHelper.isEmpty()) {
                 return 0;
             }
 
-            IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
-
             double unchangedPower = getInternalPower(from);
 
-            return behavior.transformVisualPower(TileEntityMergebox.this, from, gearStack, unchangedPower);
+            if (gearHelper == null)
+                return unchangedPower;
+
+            IGearBehavior behavior = gearHelper.getBehavior();
+            return behavior.transformVisualPower(TileEntityMergebox.this, from, gearHelper.getGear(), gearHelper.getData(), unchangedPower);
         }
 
         private double getInternalPower(EnumFacing from) {
@@ -135,25 +136,25 @@ public class TileEntityMergebox extends TileEntityGearbox {
 
         @Override
         public void setPower(double value, EnumFacing from) {
-            ItemStack gearStack = getGear(from);
+            GearHelper gearHelper = getGearHelper(from);
             if(from == null) {
                 for (int i = 0; i < powerValues.length; i++) {
                     powerValues[i] = 0;
                 }
                 onPowerChange();
             }
-        	if(from != null && !isOutput(from)) {
+        	if(from != null && gearHelper != null && !isOutput(from)) {
         		double oldPower = powerValues[from.getIndex()];
-        		if(!gearStack.isEmpty()) {
-                    IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
-                    value = behavior.transformPower(TileEntityMergebox.this,from,gearStack,value);
+        		if(!gearHelper.isEmpty()) {
+                    IGearBehavior behavior = gearHelper.getBehavior();
+                    value = behavior.transformPower(TileEntityMergebox.this,from,gearHelper.getGear(),gearHelper.getData(),value);
                 }
-        		if(oldPower != value && (value == 0 || !gearStack.isEmpty())) {
+        		if(oldPower != value && (value == 0 || !gearHelper.isEmpty())) {
         			powerValues[from.getIndex()] = value;
                     waitTime = 20;
         			onPowerChange();
         		}
-        	}else if(from == null && TileEntityMergebox.this.isBroken) {
+        	} else if(from == null && TileEntityMergebox.this.isBroken) {
         		for(EnumFacing face : EnumFacing.values()) {
         			powerValues[face.getIndex()] = 0;
         			onPowerChange();

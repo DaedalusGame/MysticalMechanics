@@ -13,8 +13,7 @@ public class LubricantStack {
     }
 
     public LubricantStack(NBTTagCompound tag) {
-        this.lubricant = MysticalMechanicsAPI.IMPL.deserializeLubricant(tag);
-        this.amount = tag.getInteger("amount");
+        readFromNBT(tag);
     }
 
     public ILubricant getLubricant() {
@@ -47,7 +46,10 @@ public class LubricantStack {
         return tag;
     }
 
-    void readFromNBT(NBTTagCompound tag) {}
+    void readFromNBT(NBTTagCompound tag) {
+        lubricant = MysticalMechanicsAPI.IMPL.deserializeLubricant(tag);
+        amount = tag.getInteger("amount");
+    }
 
     public NBTTagCompound serializeNBT() {
         return writeToNBT(new NBTTagCompound());

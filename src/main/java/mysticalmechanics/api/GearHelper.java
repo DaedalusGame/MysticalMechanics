@@ -4,6 +4,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class GearHelper {
@@ -24,7 +25,7 @@ public class GearHelper {
         return data;
     }
 
-    @Nullable
+    @Nonnull
     public IGearBehavior getBehavior() {
         return MysticalMechanicsAPI.IMPL.getGearBehavior(gear);
     }
@@ -35,8 +36,7 @@ public class GearHelper {
 
     private void createData() {
         IGearBehavior behavior = getBehavior();
-        if(behavior != null)
-            data = behavior.createData();
+        data = behavior.createData();
     }
 
     public void attach(@Nullable EntityPlayer player, ItemStack stack) {

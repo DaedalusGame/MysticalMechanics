@@ -45,8 +45,7 @@ public class GearHelperTile extends GearHelper {
     public void attach(@Nullable EntityPlayer player, ItemStack stack) {
         super.attach(player, stack);
         IGearBehavior behavior = getBehavior();
-        if(behavior != null)
-            behavior.onAttach(tile, getFacing(), gear, data, player);
+        behavior.onAttach(tile, getFacing(), gear, data, player);
         tile.getWorld().playSound(null, tile.getPos(), MysticalMechanicsAPI.GEAR_ADD, SoundCategory.BLOCKS,1.0f,1.0f);
     }
 
@@ -54,10 +53,7 @@ public class GearHelperTile extends GearHelper {
     public ItemStack detach(@Nullable EntityPlayer player) {
         ItemStack stack;
         IGearBehavior behavior = getBehavior();
-        if(behavior != null)
-            stack = behavior.onDetach(tile, getFacing(), gear, data, player);
-        else
-            stack = getGear();
+        stack = behavior.onDetach(tile, getFacing(), gear, data, player);
         super.detach(player);
         tile.getWorld().playSound(null, tile.getPos(), MysticalMechanicsAPI.GEAR_REMOVE, SoundCategory.BLOCKS,1.0f,1.0f);
         angle = 0;
@@ -67,14 +63,12 @@ public class GearHelperTile extends GearHelper {
 
     public void tick(double power) {
         IGearBehavior behavior = getBehavior();
-        if (behavior != null)
-            behavior.tick(tile, getFacing(), gear, data, power);
+        behavior.tick(tile, getFacing(), gear, data, power);
     }
 
     public void visualUpdate(double power) {
         IGearBehavior behavior = getBehavior();
-        if(behavior != null)
-            behavior.visualUpdate(tile, getFacing(), gear, data);
+        behavior.visualUpdate(tile, getFacing(), gear, data);
         updateAngle(power);
     }
 

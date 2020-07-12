@@ -94,10 +94,10 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
                 capabilityBWM.power = powerBWM;
                 capabilityMystMech.onPowerChange();
             }
-            gear.visualUpdate(capabilityMystMech.getVisualPower(getSideMystMech()));
-        } else {
             double power = capabilityMystMech.getPower(gear.getFacing());
             gear.tick(power);
+        } else {
+            gear.visualUpdate(capabilityMystMech.getVisualPower(getSideMystMech()));
         }
     }
 
@@ -327,12 +327,13 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
             if (from == null)
                 return super.getPower(from);
 
-            ItemStack gearStack = getGear(from);
-            if (gearStack.isEmpty())
+            GearHelper gearHelper = gear;
+
+            if (gearHelper.isEmpty())
                 return 0;
 
-            IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
-            return behavior.transformPower(TileEntityConverterBWM.this, from, gearStack, getInternalPower(from));
+            IGearBehavior behavior = gearHelper.getBehavior();
+            return behavior.transformPower(TileEntityConverterBWM.this, from, gearHelper.getGear(), gearHelper.getData(), getInternalPower(from));
         }
 
         private double getInternalPower(EnumFacing from) {
@@ -348,13 +349,13 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
                 super.setPower(value, from);
 
             if (from == getSideMystMech()) {
-                ItemStack gearStack = getGear(from);
+                GearHelper gearHelper = gear;
                 double transformedPower;
-                if (gearStack.isEmpty())
+                if (gearHelper.isEmpty())
                     transformedPower = 0;
                 else {
-                    IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
-                    transformedPower = behavior.transformPower(TileEntityConverterBWM.this, from, gearStack, value);
+                    IGearBehavior behavior = gearHelper.getBehavior();
+                    transformedPower = behavior.transformPower(TileEntityConverterBWM.this, from, gearHelper.getGear(), gearHelper.getData(), value);
                 }
 
                 if(transformedPower != power) {
@@ -369,13 +370,15 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
         public double getVisualPower(EnumFacing from) {
             if (from == null)
                 return super.getPower(from);
-
-            ItemStack gearStack = getGear(from);
-            if (gearStack.isEmpty())
+            if (from != getSideMystMech())
                 return 0;
 
-            IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
-            return behavior.transformVisualPower(TileEntityConverterBWM.this, from, gearStack, getInternalPower(from));
+            GearHelper gearHelper = gear;
+            if (gearHelper.isEmpty())
+                return 0;
+
+            IGearBehavior behavior = gearHelper.getBehavior();
+            return behavior.transformVisualPower(TileEntityConverterBWM.this, from, gearHelper.getGear(), gearHelper.getData(), getInternalPower(from));
         }
 
         @Override

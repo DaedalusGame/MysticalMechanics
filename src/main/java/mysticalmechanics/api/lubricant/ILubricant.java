@@ -35,6 +35,7 @@ public interface ILubricant {
     }
 
     default NBTTagCompound writeToNBT(NBTTagCompound tag) {
+        tag.setString("type",getType().toString());
         return tag;
     }
 

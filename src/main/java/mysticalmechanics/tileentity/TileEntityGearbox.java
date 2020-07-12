@@ -101,6 +101,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     public NBTTagCompound writeToNBT(NBTTagCompound tag) {
         super.writeToNBT(tag);
         capability.writeToNBT(tag);
+        lubricant.writeToNBT(tag);
         if (from != null) {
             tag.setInteger("from", from.getIndex());
         }
@@ -115,6 +116,7 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
         capability.readFromNBT(tag);
+        lubricant.readFromNBT(tag);
         if (tag.hasKey("from")) {
             from = EnumFacing.getFront(tag.getInteger("from"));
         }
@@ -198,6 +200,13 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         if (facing == null)
             return ItemStack.EMPTY;
         return gears[facing.getIndex()].getGear();
+    }
+
+    @Nullable
+    public GearHelperTile getGearHelper(EnumFacing facing) {
+        if (facing == null)
+            return null;
+        return gears[facing.getIndex()];
     }
 
     @Override
@@ -408,28 +417,34 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
 
         @Override
         public double getPower(EnumFacing from) {
-            ItemStack gearStack = getGear(from);
-            if (from != null && gearStack.isEmpty()) {
+            GearHelper gearHelper = getGearHelper(from);
+            if (gearHelper != null && gearHelper.isEmpty()) {
                 return 0;
             }
-            IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
 
             double unchangedPower = getInternalPower(from);
 
-            return behavior.transformPower(TileEntityGearbox.this, from, gearStack, unchangedPower);
+            if (gearHelper == null)
+                return unchangedPower;
+
+            IGearBehavior behavior = gearHelper.getBehavior();
+            return behavior.transformPower(TileEntityGearbox.this, from, gearHelper.getGear(), gearHelper.getData(), unchangedPower);
         }
 
         @Override
         public double getVisualPower(EnumFacing from) {
-            ItemStack gearStack = getGear(from);
-            if (from != null && gearStack.isEmpty()) {
+            GearHelper gearHelper = getGearHelper(from);
+            if (gearHelper != null && gearHelper.isEmpty()) {
                 return 0;
             }
-            IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
 
             double unchangedPower = getInternalPower(from);
 
-            return behavior.transformVisualPower(TileEntityGearbox.this, from, gearStack, unchangedPower);
+            if (gearHelper == null)
+                return unchangedPower;
+
+            IGearBehavior behavior = gearHelper.getBehavior();
+            return behavior.transformVisualPower(TileEntityGearbox.this, from, gearHelper.getGear(), gearHelper.getData(), unchangedPower);
         }
 
         protected double getInternalPower(EnumFacing from) {
@@ -442,21 +457,22 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
 
         @Override
         public void setPower(double value, EnumFacing from) {
-            ItemStack gearStack = getGear(from);
+            GearHelper gearHelper = getGearHelper(from);
+
             if(from == null) {
                 this.power = 0;
                 onPowerChange();
             }
-            if (from != null && gearStack.isEmpty()) {
+            if (from == TileEntityGearbox.this.from && (gearHelper == null || gearHelper.isEmpty())) {
                 if(capability.power != 0) {
                     this.power = 0;
                     onPowerChange();
                 }
             }
-            if (isInput(from) && !gearStack.isEmpty()) {
-                IGearBehavior behavior = MysticalMechanicsAPI.IMPL.getGearBehavior(gearStack);
+            if (gearHelper != null && isInput(from) && !gearHelper.isEmpty()) {
+                IGearBehavior behavior = gearHelper.getBehavior();
                 double oldPower = capability.power;
-                value = behavior.transformPower(TileEntityGearbox.this,from,gearStack,value);
+                value = behavior.transformPower(TileEntityGearbox.this,from,gearHelper.getGear(),gearHelper.getData(),value);
                 if (oldPower != value) {
                     capability.power = value;
                     onPowerChange();
