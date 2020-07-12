@@ -94,9 +94,11 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
                 capabilityBWM.power = powerBWM;
                 capabilityMystMech.onPowerChange();
             }
-            double power = capabilityMystMech.getPower(gear.getFacing());
-            gear.tick(power);
-        } else {
+        }
+        double power = capabilityMystMech.getPower(gear.getFacing());
+        gear.tick(power);
+        if(world.isRemote)
+        {
             gear.visualUpdate(capabilityMystMech.getVisualPower(getSideMystMech()));
         }
     }
