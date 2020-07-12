@@ -32,6 +32,11 @@ public class TileEntityMergebox extends TileEntityGearbox {
     }
 
     @Override
+    protected double getExternalPower(EnumFacing facing) {
+        return ((MergeboxMechCapability)capability).getExternalPower(facing);
+    }
+
+    @Override
     public void updateNeighbors() {
         IBlockState state = world.getBlockState(getPos());
         
@@ -73,6 +78,7 @@ public class TileEntityMergebox extends TileEntityGearbox {
 
     private class MergeboxMechCapability extends DefaultMechCapability {
         public double[] powerValues = {0,0,0,0,0,0};
+        public double[] powerValuesExternal = {0,0,0,0,0,0};
         public int waitTime;
 
         public void reduceWait() {
@@ -134,6 +140,13 @@ public class TileEntityMergebox extends TileEntityGearbox {
             }
         }
 
+        private double getExternalPower(EnumFacing from) {
+            if(from != null && isInput(from))
+                return powerValuesExternal[from.getIndex()];
+            else
+                return 0;
+        }
+
         @Override
         public void setPower(double value, EnumFacing from) {
             GearHelper gearHelper = getGearHelper(from);
@@ -145,6 +158,7 @@ public class TileEntityMergebox extends TileEntityGearbox {
             }
         	if(from != null && gearHelper != null && !isOutput(from)) {
         		double oldPower = powerValues[from.getIndex()];
+        		powerValuesExternal[from.getIndex()] = value;
         		if(!gearHelper.isEmpty()) {
                     IGearBehavior behavior = gearHelper.getBehavior();
                     value = behavior.transformPower(TileEntityMergebox.this,from,gearHelper.getGear(),gearHelper.getData(),value);
@@ -160,8 +174,8 @@ public class TileEntityMergebox extends TileEntityGearbox {
         			onPowerChange();
         		}
         	}           
-        }     
-        
+        }
+
         private double getPowerInternal() {
             double adjustedPower;
             if(waitTime > 0)
@@ -210,6 +224,12 @@ public class TileEntityMergebox extends TileEntityGearbox {
             powerValues[EnumFacing.SOUTH.getIndex()] = tag.getDouble("mechPowerSouth");
             powerValues[EnumFacing.EAST.getIndex()] = tag.getDouble("mechPowerEast");
             powerValues[EnumFacing.WEST.getIndex()] = tag.getDouble("mechPowerWest");
+            powerValuesExternal[EnumFacing.UP.getIndex()] = tag.getDouble("mechPowerExternalUp");
+            powerValuesExternal[EnumFacing.DOWN.getIndex()] = tag.getDouble("mechPowerExternalDown");
+            powerValuesExternal[EnumFacing.NORTH.getIndex()] = tag.getDouble("mechPowerExternalNorth");
+            powerValuesExternal[EnumFacing.SOUTH.getIndex()] = tag.getDouble("mechPowerExternalSouth");
+            powerValuesExternal[EnumFacing.EAST.getIndex()] = tag.getDouble("mechPowerExternalEast");
+            powerValuesExternal[EnumFacing.WEST.getIndex()] = tag.getDouble("mechPowerExternalWest");
         }
 
         @Override
@@ -222,6 +242,12 @@ public class TileEntityMergebox extends TileEntityGearbox {
             tag.setDouble("mechPowerSouth", powerValues[EnumFacing.SOUTH.getIndex()]);
             tag.setDouble("mechPowerEast",powerValues[EnumFacing.EAST.getIndex()]);
             tag.setDouble("mechPowerWest",powerValues[EnumFacing.WEST.getIndex()]);
+            tag.setDouble("mechPowerExternalUp",powerValuesExternal[EnumFacing.UP.getIndex()]);
+            tag.setDouble("mechPowerExternalDown",powerValuesExternal[EnumFacing.DOWN.getIndex()]);
+            tag.setDouble("mechPowerExternalNorth",powerValuesExternal[EnumFacing.NORTH.getIndex()]);
+            tag.setDouble("mechPowerExternalSouth", powerValuesExternal[EnumFacing.SOUTH.getIndex()]);
+            tag.setDouble("mechPowerExternalEast",powerValuesExternal[EnumFacing.EAST.getIndex()]);
+            tag.setDouble("mechPowerExternalWest",powerValuesExternal[EnumFacing.WEST.getIndex()]);
         }
     }
 }

@@ -13,12 +13,6 @@ public interface IGearBehavior {
         public double transformPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double power) {
             return power;
         }
-
-
-        @Override
-        public void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data) {
-            //NOOP;
-        }
     };
 
     default void onAttach(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, EntityPlayer player) {
@@ -80,6 +74,7 @@ public interface IGearBehavior {
      * @param facing which face the gear is attached to
      * @param gear the ItemStack representing the attached gear
      */
+    @Deprecated
     default void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear) {
         //NOOP
     }
@@ -89,7 +84,7 @@ public interface IGearBehavior {
      *
      * @param data the gear's data container
      */
-    default void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data) {
+    default void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double powerIn, double powerInternal, double powerOut) {
         visualUpdate(tile, facing, gear);
     }
 
@@ -97,12 +92,13 @@ public interface IGearBehavior {
         return false;
     }
 
+    @Deprecated
     default void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
         //NOOP
     }
 
-    default void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double power) {
-        tick(tile, facing, gear, power);
+    default void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double powerIn, double powerInternal, double powerOut) {
+        tick(tile, facing, gear, powerInternal);
     }
 
     default boolean hasData() {

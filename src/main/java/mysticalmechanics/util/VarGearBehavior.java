@@ -64,10 +64,7 @@ public class VarGearBehavior implements IGearBehavior {
 
     @Override
     public double transformPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double power) {
-        IMechCapability capability = tile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, facing);
-        if(capability != null && data instanceof Data) {
-            if(capability.isInput(facing))
-                ((Data) data).add(power);
+        if(data instanceof Data) {
             Data lastPower = (Data) data;
             if(lastPower.size() == 0)
                 return 0;
@@ -81,6 +78,8 @@ public class VarGearBehavior implements IGearBehavior {
     public double transformVisualPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double power) {
         if(data instanceof Data) {
             Data lastPower = (Data) data;
+            if(lastPower.size() == 0)
+                return 0;
             double sum = lastPower.sum();
             return sum / (lastPower.size());
         }
@@ -88,11 +87,13 @@ public class VarGearBehavior implements IGearBehavior {
     }
 
     @Override
-    public void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double power) {
+    public void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double powerIn, double powerInternal, double powerOut) {
         IMechCapability capability = tile.getCapability(MysticalMechanicsAPI.MECH_CAPABILITY, facing);
         if(capability != null && data instanceof Data) {
             if(capability.isOutput(facing))
-                ((Data) data).add(power);
+                ((Data) data).add(powerInternal);
+            if(capability.isInput(facing))
+                ((Data) data).add(powerIn);
         }
     }
 

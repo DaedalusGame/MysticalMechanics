@@ -373,15 +373,21 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         }
         for(EnumFacing facing : EnumFacing.VALUES) {
             int i = facing.getIndex();
+            double powerIn = getExternalPower(facing);
             double power = getInternalPower(facing);
+            double powerOut = capability.getPower(facing);
             if(world.isRemote) {
-                gears[i].visualUpdate(capability.getVisualPower(facing));
+                gears[i].visualUpdate(powerIn, power, capability.getVisualPower(facing));
             }
-            gears[i].tick(power);
+            gears[i].tick(powerIn, power, powerOut);
             if(gears[i].isDirty())
                 shouldUpdate = true;
         }
         lubricant.tick();
+    }
+
+    protected double getExternalPower(EnumFacing facing) {
+        return ((GearboxMechCapability)capability).getExternalPower(facing);
     }
 
     protected double getInternalPower(EnumFacing facing) {
@@ -409,6 +415,8 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
     }
 
     private class GearboxMechCapability extends DefaultMechCapability {
+        double powerExternal;
+
         @Override
         public void onPowerChange() {
             TileEntityGearbox box = TileEntityGearbox.this;
@@ -457,6 +465,13 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                 return power / ((double) (Math.max(1, getConnections())));
         }
 
+        protected double getExternalPower(EnumFacing from) {
+            if (isInput(from))
+                return powerExternal;
+            else
+                return 0;
+        }
+
         @Override
         public void setPower(double value, EnumFacing from) {
             GearHelper gearHelper = getGearHelper(from);
@@ -465,13 +480,14 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                 this.power = 0;
                 onPowerChange();
             }
-            if (from == TileEntityGearbox.this.from && (gearHelper == null || gearHelper.isEmpty())) {
+            if (isInput(from) && (gearHelper == null || gearHelper.isEmpty())) {
                 if(capability.power != 0) {
                     this.power = 0;
                     onPowerChange();
                 }
             }
             if (gearHelper != null && isInput(from) && !gearHelper.isEmpty()) {
+                powerExternal = value;
                 IGearBehavior behavior = gearHelper.getBehavior();
                 double oldPower = capability.power;
                 value = behavior.transformPower(TileEntityGearbox.this,from,gearHelper.getGear(),gearHelper.getData(),value);
@@ -490,6 +506,18 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
         @Override
         public boolean isOutput(EnumFacing from) {
             return TileEntityGearbox.this.from != from;
+        }
+
+        @Override
+        public void writeToNBT(NBTTagCompound tag) {
+            super.writeToNBT(tag);
+            tag.setDouble("powerExternal", powerExternal);
+        }
+
+        @Override
+        public void readFromNBT(NBTTagCompound tag) {
+            super.readFromNBT(tag);
+            powerExternal = tag.getDouble("powerExternal");
         }
     }
 }

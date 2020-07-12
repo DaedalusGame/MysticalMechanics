@@ -1,6 +1,7 @@
 package mysticalmechanics.util;
 
 import mysticalmechanics.api.IGearBehavior;
+import mysticalmechanics.api.IGearData;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -33,14 +34,14 @@ public class FanBehavior implements IGearBehavior {
     }
 
     @Override
-    public void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
+    public void tick(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double powerIn, double powerInternal, double powerOut) {
         World world = tile.getWorld();
         AxisAlignedBB aabb = new AxisAlignedBB(tile.getPos().offset(facing));
-        double distance = getBlowDistance(power);
+        double distance = getBlowDistance(powerOut);
         double vx = facing.getFrontOffsetX();
         double vy = facing.getFrontOffsetY();
         double vz = facing.getFrontOffsetZ();
-        double blowVelocity = getBlowVelocity(power);
+        double blowVelocity = getBlowVelocity(powerOut);
         aabb = aabb.expand(vx *distance, vy *distance, vz *distance);
 
         List<Entity> entities = world.getEntitiesWithinAABB(Entity.class,aabb);

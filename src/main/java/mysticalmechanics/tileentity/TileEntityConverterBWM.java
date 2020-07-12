@@ -100,12 +100,14 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
                 capabilityMystMech.onPowerChange();
             }
         }
+        double powerIn = capabilityMystMech.getExternalPower(gear.getFacing());
         double power = capabilityMystMech.getInternalPower(gear.getFacing());
-        gear.tick(power);
+        double powerOut = capabilityMystMech.getPower(gear.getFacing());
+        gear.tick(powerIn, power, powerOut);
         if(gear.isDirty())
             shouldUpdate = true;
         if(world.isRemote)
-            gear.visualUpdate(capabilityMystMech.getVisualPower(getSideMystMech()));
+            gear.visualUpdate(powerIn, power, capabilityMystMech.getVisualPower(getSideMystMech()));
     }
 
     @Override
@@ -328,6 +330,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
     }
 
     private class ConverterMystMechCapability extends DefaultMechCapability {
+        double powerExternal;
 
         @Override
         public double getPower(EnumFacing from) {
@@ -350,12 +353,20 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
                 return 0;
         }
 
+        public double getExternalPower(EnumFacing from) {
+            if (from == getSideMystMech() && canConvertToBWM())
+                return powerExternal;
+            else
+                return 0;
+        }
+
         @Override
         public void setPower(double value, EnumFacing from) {
             if (from == null)
                 super.setPower(value, from);
 
             if (from == getSideMystMech()) {
+                powerExternal = value;
                 GearHelper gearHelper = gear;
                 double transformedPower;
                 if (gearHelper.isEmpty())
@@ -402,6 +413,18 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
         @Override
         public boolean isOutput(EnumFacing from) {
             return from == getSideMystMech() && canConvertToMM();
+        }
+
+        @Override
+        public void readFromNBT(NBTTagCompound tag) {
+            super.readFromNBT(tag);
+            powerExternal = tag.getDouble("powerExternal");
+        }
+
+        @Override
+        public void writeToNBT(NBTTagCompound tag) {
+            super.writeToNBT(tag);
+            tag.setDouble("powerExternal", powerExternal);
         }
     }
 }
