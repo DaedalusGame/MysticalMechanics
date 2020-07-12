@@ -79,7 +79,7 @@ public class BlockConverterBWM extends Block {
     @Override
     public void neighborChanged(IBlockState state, World world, BlockPos pos, Block block, BlockPos fromPos){
         TileEntityConverterBWM tile = (TileEntityConverterBWM)world.getTileEntity(pos);
-        tile.updateNeighbors();
+        tile.shouldUpdate = true;
     }
 
     @Override

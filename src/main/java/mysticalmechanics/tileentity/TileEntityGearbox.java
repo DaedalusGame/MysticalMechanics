@@ -378,6 +378,8 @@ public class TileEntityGearbox extends TileEntity implements ITickable, IGearbox
                 gears[i].visualUpdate(capability.getVisualPower(facing));
             }
             gears[i].tick(power);
+            if(gears[i].isDirty())
+                shouldUpdate = true;
         }
         lubricant.tick();
     }

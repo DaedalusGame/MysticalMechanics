@@ -39,6 +39,10 @@ public class GearHelper {
         data = behavior.createData();
     }
 
+    public boolean isDirty() {
+        return data != null && data.isDirty();
+    }
+
     public void attach(@Nullable EntityPlayer player, ItemStack stack) {
         gear = stack;
         createData();

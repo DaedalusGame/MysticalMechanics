@@ -6,4 +6,6 @@ public interface IGearData {
     void readFromNBT(NBTTagCompound tag);
 
     NBTTagCompound writeToNBT(NBTTagCompound tag);
+
+    boolean isDirty();
 }

@@ -11,6 +11,7 @@ import mysticalmechanics.compat.TheOneProbe;
 import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.handler.RightClickHandler;
 import mysticalmechanics.util.FanBehavior;
+import mysticalmechanics.util.VarGearBehavior;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -238,5 +239,6 @@ public class MysticalMechanics
             }
         });
         MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_fan"), Ingredient.fromItem(RegistryHandler.FAN), new FanBehavior());
+        //MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_test"), new OreIngredient("stone"), new VarGearBehavior());
     }
 }

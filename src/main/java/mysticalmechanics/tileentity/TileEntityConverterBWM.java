@@ -31,6 +31,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
     ConverterBWMCapability capabilityBWM;
 
     GearHelperTile gear;
+    public boolean shouldUpdate;
 
     public TileEntityConverterBWM() {
         capabilityBWM = new ConverterBWMCapability();
@@ -88,6 +89,10 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
 
     @Override
     public void update() {
+        if(shouldUpdate) {
+            updateNeighbors();
+            shouldUpdate = false;
+        }
         if(!world.isRemote) {
             int powerBWM = capabilityBWM.calculateInput();
             if (capabilityBWM.power != powerBWM) {
@@ -95,12 +100,12 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
                 capabilityMystMech.onPowerChange();
             }
         }
-        double power = capabilityMystMech.getPower(gear.getFacing());
+        double power = capabilityMystMech.getInternalPower(gear.getFacing());
         gear.tick(power);
+        if(gear.isDirty())
+            shouldUpdate = true;
         if(world.isRemote)
-        {
             gear.visualUpdate(capabilityMystMech.getVisualPower(getSideMystMech()));
-        }
     }
 
     @Override
@@ -331,7 +336,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
 
             GearHelper gearHelper = gear;
 
-            if (gearHelper.isEmpty())
+            if (gearHelper.isEmpty() || !canConvertToMM())
                 return 0;
 
             IGearBehavior behavior = gearHelper.getBehavior();
@@ -385,7 +390,7 @@ public class TileEntityConverterBWM extends TileEntity implements ITickable, IGe
 
         @Override
         public void onPowerChange() {
-            updateNeighbors();
+            shouldUpdate = true;
             markDirty();
         }
 
