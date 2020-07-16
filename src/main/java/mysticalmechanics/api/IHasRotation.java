@@ -10,4 +10,8 @@ public interface IHasRotation {
     double getAngle(@Nonnull EnumFacing side);
 
     double getLastAngle(@Nonnull EnumFacing side);
+
+    default void setRotation(@Nonnull EnumFacing side, double angle, double lastAngle) {
+        //NOOP
+    }
 }

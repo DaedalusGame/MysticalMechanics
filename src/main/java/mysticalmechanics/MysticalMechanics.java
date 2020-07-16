@@ -3,7 +3,6 @@ package mysticalmechanics;
 import mysticalmechanics.api.*;
 import mysticalmechanics.api.lubricant.DefaultLubricantCapability;
 import mysticalmechanics.api.lubricant.ILubricantCapability;
-import mysticalmechanics.api.lubricant.SimpleLubricant;
 import mysticalmechanics.apiimpl.ConfigValue;
 import mysticalmechanics.apiimpl.MysticalMechanicsAPIImpl;
 import mysticalmechanics.compat.BetterWithMods;
@@ -11,7 +10,6 @@ import mysticalmechanics.compat.TheOneProbe;
 import mysticalmechanics.handler.RegistryHandler;
 import mysticalmechanics.handler.RightClickHandler;
 import mysticalmechanics.util.FanBehavior;
-import mysticalmechanics.util.VarGearBehavior;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -197,21 +195,11 @@ public class MysticalMechanics
             public double transformPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
                 return power;
             }
-
-            @Override
-            public void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear) {
-                //NOOP
-            }
         });
         MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_gold"), new OreIngredient("gearGold"), new IGearBehavior() {
             @Override
             public double transformPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
                 return power;
-            }
-
-            @Override
-            public void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear) {
-                //NOOP
             }
         });
         MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_gold_on"), Ingredient.fromItem(RegistryHandler.GOLD_GEAR_ON), new IGearBehavior() {
@@ -220,22 +208,12 @@ public class MysticalMechanics
                 boolean powered = tile.getWorld().isBlockPowered(tile.getPos());
                 return !powered ? power : 0;
             }
-
-            @Override
-            public void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear) {
-                //NOOP
-            }
         });
         MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_gold_off"), Ingredient.fromItem(RegistryHandler.GOLD_GEAR_OFF), new IGearBehavior() {
             @Override
             public double transformPower(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, double power) {
                 boolean powered = tile.getWorld().isBlockPowered(tile.getPos());
                 return powered ? power : 0;
-            }
-
-            @Override
-            public void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear) {
-                //NOOP
             }
         });
         MysticalMechanicsAPI.IMPL.registerGear(new ResourceLocation(MODID,"gear_fan"), Ingredient.fromItem(RegistryHandler.FAN), new FanBehavior());

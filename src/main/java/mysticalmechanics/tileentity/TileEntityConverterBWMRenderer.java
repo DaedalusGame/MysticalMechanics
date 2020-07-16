@@ -1,27 +1,16 @@
 package mysticalmechanics.tileentity;
 
-import mysticalmechanics.MysticalMechanics;
-import mysticalmechanics.api.GearHelper;
 import mysticalmechanics.api.GearHelperTile;
 import mysticalmechanics.api.MysticalMechanicsAPI;
-import mysticalmechanics.block.BlockGearbox;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-
-import java.awt.*;
 
 public class TileEntityConverterBWMRenderer extends TileEntitySpecialRenderer<TileEntityConverterBWM> {
     public TileEntityConverterBWMRenderer() {
@@ -41,28 +30,13 @@ public class TileEntityConverterBWMRenderer extends TileEntitySpecialRenderer<Ti
     public void render(TileEntityConverterBWM tile, double x, double y, double z, float partialTicks, int destroyStage, float tileAlpha) {
         if (tile != null) {
             EntityPlayer player = Minecraft.getMinecraft().player;
-            ItemStack heldItem = player.getHeldItemMainhand();
-            RayTraceResult result = Minecraft.getMinecraft().objectMouseOver;
-            boolean correctHit = result != null && result.typeOfHit == RayTraceResult.Type.BLOCK && result.getBlockPos().equals(tile.getPos());
-            boolean isHoldingGear = MysticalMechanicsAPI.IMPL.isValidGear(heldItem);
+            ItemStack gearHologram = player.getHeldItemMainhand();
             EnumFacing direction = tile.getSideMystMech();
             GearHelperTile gear = tile.gear;
-            boolean hitSide = false;
-            if (correctHit) {
-                EnumFacing sideHit = result.sideHit;
-                if (player.isSneaking())
-                    sideHit = sideHit.getOpposite();
-                hitSide = sideHit == direction;
-            }
-            if (hitSide) {
-                boolean gearFits = isHoldingGear && tile.canAttachGear(direction, heldItem);
-                if (gear.isEmpty() && !gearFits) {
-                    hitSide = false;
-                }
-            }
-            if (!gear.isEmpty() || hitSide) {
-                //double powerRatio = tile.capability.getPower(direction);
+            boolean sideHit = MysticalMechanicsAPI.IMPL.isGearHit(tile, direction);
+            boolean renderHologram = MysticalMechanicsAPI.IMPL.shouldRenderHologram(gearHologram, !gear.isEmpty(), sideHit, tile.canAttachGear(direction, gearHologram));
 
+            if (!gear.isEmpty() || renderHologram) {
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
 
@@ -90,30 +64,8 @@ public class TileEntityConverterBWMRenderer extends TileEntitySpecialRenderer<Ti
 
                 }
 
-                double totalTick = tick + partialTicks;
+                MysticalMechanicsAPI.IMPL.renderGear(gear.getGear(), gearHologram, renderHologram, partialTicks, -0.375, 0.875, (float) gear.getPartialAngle(partialTicks));
 
-                //render hologram
-                double offset = -0.375;
-                ItemStack gearStack = gear.getGear();
-                if (hitSide && MysticalMechanics.RENDER_GEAR_HOLOGRAM) {
-                    double startOffset;
-                    double endOffset;
-                    if (gear.isEmpty()) {
-                        startOffset = -0.5;
-                        endOffset = offset;
-                        gearStack = heldItem;
-                    } else {
-                        startOffset = offset;
-                        endOffset = -0.5;
-                    }
-                    offset = MathHelper.clampedLerp(startOffset, endOffset, (totalTick / 10) % 1);
-                }
-                //render the gears and rotate them based on how much power they have.
-                GlStateManager.translate(0, 0, offset);
-                GlStateManager.scale(0.875, 0.875, 0.875);
-                GlStateManager.rotate((float) gear.getPartialAngle(partialTicks), 0, 0, 1);
-                Minecraft.getMinecraft().getRenderItem().renderItem(gearStack,
-                        ItemCameraTransforms.TransformType.FIXED);
                 GlStateManager.popMatrix();
                 GlStateManager.disableBlend();
 

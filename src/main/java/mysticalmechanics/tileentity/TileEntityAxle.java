@@ -328,6 +328,12 @@ public class TileEntityAxle extends TileEntity implements ITickable, IAxle, IHas
 		return lastAngle;
 	}
 
+	@Override
+	public void setRotation(@Nonnull EnumFacing side, double angle, double lastAngle) {
+		this.angle = angle;
+		this.lastAngle = lastAngle;
+	}
+
 	private class AxleCapability extends DefaultMechCapability {
 		double forwardPower;
 		double backwardPower;

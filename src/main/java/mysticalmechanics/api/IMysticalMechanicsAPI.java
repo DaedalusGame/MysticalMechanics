@@ -2,6 +2,7 @@ package mysticalmechanics.api;
 
 import mysticalmechanics.api.lubricant.ILubricant;
 import mysticalmechanics.api.lubricant.SimpleLubricant;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -9,8 +10,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import java.util.Map;
@@ -128,4 +127,56 @@ public interface IMysticalMechanicsAPI {
     void pushPower(TileEntity tileSelf, EnumFacing sideSelf, IMechCapability capSelf, boolean hasGear);
 
     void pullPower(TileEntity tileSelf, EnumFacing sideSelf, IMechCapability capSelf, boolean hasGear);
+
+    /**
+     *
+     * @param tile The tile to check
+     * @param facing The side to check
+     * @return Whether the player is currently targeting this side. If the player is sneaking, this returns whether the opposite side is targeted.
+     */
+    boolean isGearHit(TileEntity tile, EnumFacing facing);
+
+    /**
+     *
+     *
+     * @param gear The gear held by the player
+     * @param hasGear Whether this side has a gear attached
+     * @param sideHit output from {@link #isGearHit(TileEntity, EnumFacing)}
+     * @param canAttach Whether we can attach the gear on this side
+     * @return Whether the gear hologram should render
+     */
+    boolean shouldRenderHologram(ItemStack gear, boolean hasGear, boolean sideHit, boolean canAttach);
+
+    /**
+     * Renders a gear + the hologram effect seen when hovering over gear faces
+     * Expects to already be translated to xyz + 0.5;
+     * Expects to already be oriented;
+     *
+     * @param gear the physically attached gear we should render
+     * @param gearHologram the gear hologram we should render
+     * @param renderHologram output from {@link #shouldRenderHologram(ItemStack, boolean, boolean, boolean)}
+     * @param partialTicks
+     * @param offset offset from the center (default in mystmech is -0.375)
+     * @param scale size modifier (default in mystmech is 0.875)
+     * @param angle angle of the gear
+     */
+    void renderGear(ItemStack gear, ItemStack gearHologram, boolean renderHologram, float partialTicks, double offset, double scale, float angle);
+
+    /**
+     * Renders a model as an axle (it will be rotated to face in a certain axis direction and rotate around this axis)
+     * Expects to already be translated to xyz + 0.5;
+     *
+     * @param resLoc The model to render
+     * @param axis The axis of the axle
+     * @param angle The angle of the axle
+     */
+    void renderAxle(ModelResourceLocation resLoc, EnumFacing.Axis axis, float angle);
+
+    /**
+     * You can call this (preferably in rendering) to sync rotations. Axles use this to ensure they're all aligned.
+     *
+     * @param tile The tile that will sync its rotation. Must implement IHasRotation or nothing will happen.
+     * @param checkDirection The face in which to check for adjacent rotating neighbors.
+     */
+    void syncAngle(TileEntity tile, EnumFacing checkDirection);
 }

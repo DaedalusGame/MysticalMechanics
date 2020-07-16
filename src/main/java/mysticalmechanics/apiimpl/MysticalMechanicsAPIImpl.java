@@ -4,14 +4,18 @@ import mysticalmechanics.MysticalMechanics;
 import mysticalmechanics.api.*;
 import mysticalmechanics.api.lubricant.ILubricant;
 import mysticalmechanics.api.lubricant.SimpleLubricant;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import javax.annotation.Nonnull;
 import java.util.Comparator;
@@ -28,6 +32,19 @@ public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
 
     private IMechUnit unitDefault;
     private boolean unitDirty;
+
+    static int tick;
+
+    public MysticalMechanicsAPIImpl(){
+        super();
+        MinecraftForge.EVENT_BUS.register(getClass());
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(TickEvent.ClientTickEvent event) {
+        if(event.phase == TickEvent.Phase.START)
+            tick++;
+    }
 
     public void registerConfigValue(IConfigValue value) {
         CONFIG_VALUES.put(value.getKey(),value);
@@ -184,6 +201,50 @@ public class MysticalMechanicsAPIImpl implements IMysticalMechanicsAPI {
         }
         if(!hasValidTile)
             capSelf.setPower(0, sideSelf);
+    }
+
+    @Override
+    public boolean isGearHit(TileEntity tile, EnumFacing facing) {
+        return MysticalMechanics.proxy.isGearHit(tile, facing);
+    }
+
+    @Override
+    public boolean shouldRenderHologram(ItemStack gear, boolean hasGear, boolean sideHit, boolean canAttach) {
+        if(sideHit) {
+            boolean isHoldingGear = MysticalMechanicsAPI.IMPL.isValidGear(gear);
+            boolean gearFits = isHoldingGear && canAttach;
+            if (!hasGear && !gearFits) {
+                return false;
+            }
+        }
+        return sideHit;
+    }
+
+    @Override
+    public void renderGear(ItemStack gear, ItemStack gearHologram, boolean renderHologram, float partialTicks, double offset, double scale, float angle) {
+        float totalTick = tick + partialTicks;
+        MysticalMechanics.proxy.renderGear(gear,gearHologram,renderHologram,totalTick,offset,scale,angle);
+    }
+
+    @Override
+    public void renderAxle(ModelResourceLocation resLoc, EnumFacing.Axis axis, float angle) {
+        MysticalMechanics.proxy.renderAxle(resLoc, axis, angle);
+    }
+
+    @Override
+    public void syncAngle(TileEntity tile, EnumFacing checkDirection) {
+        if (!(tile instanceof IHasRotation))
+            return;
+        BlockPos axlePos = tile.getPos().offset(checkDirection);
+        TileEntity axleTile = tile.getWorld().getTileEntity(axlePos);
+        if (axleTile instanceof IHasRotation) {
+            IHasRotation axle = (IHasRotation) axleTile;
+            if (axle.hasRotation(checkDirection.getOpposite())) {
+                double angle = axle.getAngle(checkDirection.getOpposite());
+                double lastAngle = axle.getLastAngle(checkDirection.getOpposite());
+                ((IHasRotation) tile).setRotation(checkDirection,angle,lastAngle);
+            }
+        }
     }
 
     static class GearStruct {

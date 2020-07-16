@@ -84,7 +84,7 @@ public interface IGearBehavior {
      *
      * @param data the gear's data container
      */
-    default void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double powerIn, double powerInternal) {
+    default void visualUpdate(TileEntity tile, @Nullable EnumFacing facing, ItemStack gear, IGearData data, double powerIn, double powerOut) {
         visualUpdate(tile, facing, gear);
     }
 
